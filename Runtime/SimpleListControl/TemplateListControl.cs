@@ -1,27 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Sirenix.Serialization;
 using UnityEngine;
 
 namespace Rehawk.UIFramework
 {
-    public class ListControl : Control, IListControl
+    public class TemplateListControl : ListControl
     {
         [SerializeField] private RectTransform itemRoot;
         [OdinSerialize] private GameObject itemTemplate;
 
         private int capacity;
+        private object[] itemData;
+        
         private readonly List<GameObject> items = new List<GameObject>();
+        
+        public override event Action<int, GameObject> CreatedItem;
+        public override event Action<int, GameObject, object> ActivatedItem;
+        public override event Action<int, GameObject, object> DeactivatedItem;
 
-        public event Action<int, GameObject> ActivatedItem;
-        public event Action<int, GameObject> DeactivatedItem;
-
-        public int Count
+        public override int Count
         {
             get { return items.Count; }
         }
         
-        public IEnumerable<GameObject> Items
+        public override IEnumerable<GameObject> Items
         {
             get { return items; }    
         }
@@ -33,17 +37,41 @@ namespace Rehawk.UIFramework
             itemTemplate.SetActive(false);
         }
 
-        public void SetCount(int count)
+        public override void SetCount(int count)
         {
             this.capacity = count;
-            SetDirty();
-        }
-        
-        protected override void OnGotDirty()
-        {
-            base.OnGotDirty();
+            itemData = new object[count];
             
             RefreshItems();
+            SetDirty();
+        }
+
+        public override void SetCount(IEnumerable<object> itemData)
+        {
+            this.itemData = itemData.ToArray();
+            this.capacity = this.itemData.Length;
+            
+            RefreshItems();
+            SetDirty();
+        }
+
+        public override void Clear()
+        {
+            this.itemData = Array.Empty<object>();
+            this.capacity = 0;
+            
+            ClearItems();
+            SetDirty();
+        }
+
+        public override GameObject GetItem(int index)
+        {
+            if (index >= 0 && index < items.Count)
+            {
+                return items[index];
+            }
+
+            return null;
         }
 
         private void ClearItems()
@@ -52,6 +80,7 @@ namespace Rehawk.UIFramework
             {
                 Destroy(items[i]);
             }
+            
             items.Clear();
         }
 
@@ -65,7 +94,8 @@ namespace Rehawk.UIFramework
                 itemObj.gameObject.SetActive(true);
                 items.Add(itemObj);
                 
-                ActivatedItem?.Invoke(i, items[i]);
+                CreatedItem?.Invoke(i, items[i]);
+                ActivatedItem?.Invoke(i, items[i], itemData[i]);
             }
         }
     }

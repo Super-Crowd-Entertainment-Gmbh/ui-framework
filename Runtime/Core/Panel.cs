@@ -1,87 +1,149 @@
-﻿using System;
+﻿using System.Collections;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
+using Sirenix.Serialization;
+using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
-using UnityEngine.Video;
+using Object = UnityEngine.Object;
 
 namespace Rehawk.UIFramework
 {
-    public interface IPanel : IElement
-    {
-        void AddSubElement(IElement element);
-        void RemoveSubElement(IElement element);
-    }
+    public delegate void PanelVisibilityEvent(Panel panel);
     
-    public abstract class Panel : Element, IPanel
+    [ShowOdinSerializedPropertiesInInspector]
+    public sealed class Panel : UIBehaviour, 
+        ISerializationCallbackReceiver, 
+        ISupportsPrefabSerialization
     {
-        private readonly HashSet<IElement> elements = new HashSet<IElement>();
+        [BoxGroup("StrategyBox", false)]
+        [DisableInPlayMode]
+        [SerializeField] private bool hiddenByDefault;
 
-        public event EventHandler BecameVisible; 
-        public event EventHandler BecameInvisible; 
-            
-        public abstract bool IsVisible { get; }
+        [BoxGroup("StrategyBox", false)]
+        [LabelText("Strategy")]
+        [SerializeField] private bool useStrategy;
+        
+        [BoxGroup("StrategyBox", false)]
+        [HideLabel, ShowIf("@this.useStrategy")]
+        [ShowInInspector] private VisibilityStrategy visibilityStrategy;
+        
+        [Space]
+        
+        [SerializeField] public UnityEvent becameVisible;
+        [SerializeField] public UnityEvent becameInvisible;
 
-        public void Show()
-        {
-            Show(1);
-        }
-        
-        public void Hide()
-        {
-            Hide(1);
-        }
-        
-        public void Toggle()
-        {
-            Toggle(1);
-        }
-        
-        public void Show(float duration)
-        {
-            OnShow(duration);
+        private bool isStarted;
 
-            foreach (IElement element in elements)
+        public event PanelVisibilityEvent BecameVisible;
+        public event PanelVisibilityEvent BecameInvisible;
+        
+        public bool IsVisible
+        {
+            get
             {
-                element.OnParentPanelGotVisible(this);
+                if (useStrategy && visibilityStrategy != null)
+                {
+                    return visibilityStrategy.IsVisible;
+                }
+                
+                return gameObject.activeSelf;
             }
-            
-            BecameVisible?.Invoke(this, EventArgs.Empty);
-        }
-        
-        public void Hide(float duration)
-        {
-            OnHide(duration);
-            
-            foreach (IElement element in elements)
-            {
-                element.OnParentPanelGotInvisible(this);
-            }
-            
-            BecameInvisible?.Invoke(this, EventArgs.Empty);
         }
 
-        public void Toggle(float duration)
+        protected override void Awake()
         {
+            base.Awake();
+
+            gameObject.SetActive(true);
+            SetVisible(true);
+        }
+
+        protected override void Start()
+        {
+            base.Start();
+
+            isStarted = true;
+            
+            StartCoroutine(SetInitialVisibilityDelayed());
+        }
+
+        public void SetVisible(bool visible)
+        {
+            if (IsVisible != visible)
+            {
+                if (useStrategy && visibilityStrategy != null)
+                {
+                    visibilityStrategy.SetVisible(visible, HandleVisibilityChange);
+                }
+                else
+                {
+                    gameObject.SetActive(visible);
+                    HandleVisibilityChange();
+                }
+            }
+        }
+        
+        private void HandleVisibilityChange()
+        {
+            if (isStarted)
+                return;
+            
             if (IsVisible)
             {
-                Hide(duration);
+                BecameVisible?.Invoke(this);
+                becameVisible.Invoke();
             }
             else
             {
-                Show(duration);
+                BecameInvisible?.Invoke(this);
+                becameInvisible.Invoke();
             }
         }
-        
-        public void AddSubElement(IElement element)
+
+        private IEnumerator SetInitialVisibilityDelayed()
         {
-            elements.Add(element);
+            yield return null;
+            
+            // Do it after the start to enable the static context set of child controls.
+            SetVisible(!hiddenByDefault);
         }
         
-        public void RemoveSubElement(IElement element)
+        #region SERIALIZATION
+
+        [SerializeField, HideInInspector] private SerializationData serializationData;
+        
+        [SerializeField, HideInInspector] private byte[] visibilityStrategyData;
+        [SerializeField, HideInInspector] private List<Object> visibilityStrategyReferenceResolverData;
+
+        SerializationData ISupportsPrefabSerialization.SerializationData
         {
-            elements.Remove(element);
+            get { return this.serializationData; }
+            set { this.serializationData = value; }
+        }
+        
+#if UNITY_EDITOR
+        [HideInTables]
+        [OnInspectorGUI]
+        [PropertyOrder(-2.147484E+09f)]
+        private void InternalOnInspectorGUI()
+        {
+            EditorOnlyModeConfigUtility.InternalOnInspectorGUI(this);
+        }
+#endif
+
+        void ISerializationCallbackReceiver.OnBeforeSerialize()
+        {
+            visibilityStrategyData = SerializationUtility.SerializeValue(visibilityStrategy, DataFormat.Binary, out visibilityStrategyReferenceResolverData);
+            UnitySerializationUtility.SerializeUnityObject(this, ref this.serializationData);    
         }
 
-        protected virtual void OnShow(float duration = 0) {}
-        protected virtual void OnHide(float duration = 0) {}
+        void ISerializationCallbackReceiver.OnAfterDeserialize()
+        {
+            UnitySerializationUtility.DeserializeUnityObject(this, ref this.serializationData);
+            visibilityStrategy = SerializationUtility.DeserializeValue<VisibilityStrategy>(visibilityStrategyData, DataFormat.Binary, visibilityStrategyReferenceResolverData);
+        }
+
+        #endregion
     }
 }
