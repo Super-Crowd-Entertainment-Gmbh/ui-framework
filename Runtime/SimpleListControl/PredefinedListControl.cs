@@ -13,7 +13,10 @@ namespace Rehawk.UIFramework
         private int count;
         private object[] itemData;
         
+<<<<<<< HEAD
         public override event Action<int, GameObject> CreatedItem;
+=======
+>>>>>>> ff995eef74f33e279537f12bcdb7a5a240041a08
         public override event Action<int, GameObject, object> ActivatedItem;
         public override event Action<int, GameObject, object> DeactivatedItem;
 
@@ -31,11 +34,14 @@ namespace Rehawk.UIFramework
         {
             base.Start();
 
+<<<<<<< HEAD
             for (int i = 0; i < items.Length; i++)
             {
                 CreatedItem?.Invoke(i, items[i]);    
             }
             
+=======
+>>>>>>> ff995eef74f33e279537f12bcdb7a5a240041a08
             ClearItems();
         }
 
@@ -52,6 +58,7 @@ namespace Rehawk.UIFramework
             this.itemData = itemData.ToArray();
             this.count = this.itemData.Length;
             
+<<<<<<< HEAD
             RefreshItems();
             SetDirty();
         }
@@ -62,6 +69,8 @@ namespace Rehawk.UIFramework
             this.count = 0;
             
             ClearItems();
+=======
+>>>>>>> ff995eef74f33e279537f12bcdb7a5a240041a08
             SetDirty();
         }
 
@@ -75,6 +84,15 @@ namespace Rehawk.UIFramework
             return null;
         }
 
+<<<<<<< HEAD
+=======
+        protected override void OnRefresh()
+        {
+            base.OnRefresh();
+            RefreshItems();
+        }
+
+>>>>>>> ff995eef74f33e279537f12bcdb7a5a240041a08
         private void ClearItems()
         {
             for (int i = 0; i < items.Length; i++)

@@ -16,7 +16,10 @@ namespace Rehawk.UIFramework
         
         private readonly List<GameObject> items = new List<GameObject>();
         
+<<<<<<< HEAD:Runtime/SimpleListControl/TemplateListControl.cs
         public override event Action<int, GameObject> CreatedItem;
+=======
+>>>>>>> ff995eef74f33e279537f12bcdb7a5a240041a08:Runtime/ListControl/ListControl.cs
         public override event Action<int, GameObject, object> ActivatedItem;
         public override event Action<int, GameObject, object> DeactivatedItem;
 
@@ -42,7 +45,10 @@ namespace Rehawk.UIFramework
             this.capacity = count;
             itemData = new object[count];
             
+<<<<<<< HEAD:Runtime/SimpleListControl/TemplateListControl.cs
             RefreshItems();
+=======
+>>>>>>> ff995eef74f33e279537f12bcdb7a5a240041a08:Runtime/ListControl/ListControl.cs
             SetDirty();
         }
 
@@ -51,6 +57,22 @@ namespace Rehawk.UIFramework
             this.itemData = itemData.ToArray();
             this.capacity = this.itemData.Length;
             
+            SetDirty();
+        }
+
+        public override GameObject GetItem(int index)
+        {
+            if (index >= 0 && index < items.Count)
+            {
+                return items[index];
+            }
+
+            return null;
+        }
+
+        protected override void OnRefresh()
+        {
+            base.OnRefresh();
             RefreshItems();
             SetDirty();
         }
@@ -94,7 +116,10 @@ namespace Rehawk.UIFramework
                 itemObj.gameObject.SetActive(true);
                 items.Add(itemObj);
                 
+<<<<<<< HEAD:Runtime/SimpleListControl/TemplateListControl.cs
                 CreatedItem?.Invoke(i, items[i]);
+=======
+>>>>>>> ff995eef74f33e279537f12bcdb7a5a240041a08:Runtime/ListControl/ListControl.cs
                 ActivatedItem?.Invoke(i, items[i], itemData[i]);
             }
         }

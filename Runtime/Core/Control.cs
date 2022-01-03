@@ -4,7 +4,10 @@ using Rehawk.UIFramework.Utilities;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 using UnityEngine;
+<<<<<<< HEAD
 using UnityEngine.Assertions;
+=======
+>>>>>>> ff995eef74f33e279537f12bcdb7a5a240041a08
 using UnityEngine.EventSystems;
 using Object = UnityEngine.Object;
 
@@ -18,8 +21,11 @@ namespace Rehawk.UIFramework
         private bool isStarted;
         private Panel parentPanel;
 
+<<<<<<< HEAD
         private readonly Dictionary<string, Action<Control>> commandHandlers = new Dictionary<string, Action<Control>>();
 
+=======
+>>>>>>> ff995eef74f33e279537f12bcdb7a5a240041a08
         public event EventHandler GotDirty;
 
         public Panel ParentPanel
@@ -101,6 +107,7 @@ namespace Rehawk.UIFramework
             GotDirty?.Invoke(this, EventArgs.Empty);
         }
 
+<<<<<<< HEAD
         public void SendCommand(string commandName)
         {
             if (commandHandlers.TryGetValue(commandName, out Action<Control> handler))
@@ -156,6 +163,8 @@ namespace Rehawk.UIFramework
             }
         }
 
+=======
+>>>>>>> ff995eef74f33e279537f12bcdb7a5a240041a08
         /// <summary>
         /// Is called when the displayed visuals should be refreshed.
         /// </summary>
@@ -169,6 +178,7 @@ namespace Rehawk.UIFramework
             SetDirty();
             OnPanelBecameVisible();
         }
+<<<<<<< HEAD
 
         private void OnPanelBecameInvisible(Panel panel)
         {
@@ -229,6 +239,68 @@ namespace Rehawk.UIFramework
 
     public abstract class Control<TContext> : ContextControl
     {
+=======
+
+        private void OnPanelBecameInvisible(Panel panel)
+        {
+            OnPanelBecameInvisible();
+        }
+        
+        #region SERIALIZATION
+
+        [SerializeField]
+        [HideInInspector]
+        private SerializationData serializationData;
+        
+        SerializationData ISupportsPrefabSerialization.SerializationData
+        {
+            get { return this.serializationData; }
+            set { this.serializationData = value; }
+        }
+        
+#if UNITY_EDITOR
+        [HideInTables]
+        [OnInspectorGUI]
+        [PropertyOrder(-2.147484E+09f)]
+        private void InternalOnInspectorGUI()
+        {
+            EditorOnlyModeConfigUtility.InternalOnInspectorGUI(this);
+        }
+#endif
+
+        void ISerializationCallbackReceiver.OnBeforeSerialize()
+        {
+            this.OnBeforeSerialize();
+            UnitySerializationUtility.SerializeUnityObject(this, ref this.serializationData);
+        }
+
+        void ISerializationCallbackReceiver.OnAfterDeserialize()
+        {
+            UnitySerializationUtility.DeserializeUnityObject(this, ref this.serializationData);
+            this.OnAfterDeserialize();
+        }
+
+        protected virtual void OnBeforeSerialize() {}
+
+        protected virtual void OnAfterDeserialize() {}
+
+        #endregion
+    }
+    
+    public abstract class ContextControl : Control
+    {
+        public abstract event EventHandler BeforeContextChanged;
+        public abstract event EventHandler AfterContextChanged;
+        
+        public abstract bool HasContext { get; }
+        
+        public abstract void SetContext(object context);
+        public abstract object GetContext();
+    }
+
+    public abstract class Control<TContext> : ContextControl
+    {
+>>>>>>> ff995eef74f33e279537f12bcdb7a5a240041a08
         [PropertyOrder(-100)]
         [BoxGroup("ContextBox", false)]
         [HorizontalGroup("ContextBox/Context"), LabelText("Context")]
