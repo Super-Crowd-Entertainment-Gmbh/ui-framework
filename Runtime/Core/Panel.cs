@@ -1,9 +1,4 @@
-<<<<<<< HEAD
 ﻿using System.Collections;
-=======
-﻿using System;
-using System.Collections;
->>>>>>> ff995eef74f33e279537f12bcdb7a5a240041a08
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
