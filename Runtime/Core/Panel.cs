@@ -83,6 +83,11 @@ namespace Rehawk.UIFramework
                 }
             }
         }
+
+        public void ToggleVisible()
+        {
+            SetVisible(!IsVisible);
+        }
         
         private void HandleVisibilityChange()
         {

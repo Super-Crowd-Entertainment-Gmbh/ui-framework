@@ -49,7 +49,7 @@ namespace Rehawk.UIFramework
             SetDirty();
         }
 
-        public override void SetCount(IEnumerable<object> itemData)
+        public override void SetCountByData(IEnumerable<object> itemData)
         {
             this.itemData = itemData.ToArray();
             this.capacity = this.itemData.Length;
