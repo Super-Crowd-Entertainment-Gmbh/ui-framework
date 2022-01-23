@@ -91,7 +91,7 @@ namespace Rehawk.UIFramework
         
         private void HandleVisibilityChange()
         {
-            if (isStarted)
+            if (!isStarted)
                 return;
             
             if (IsVisible)
