@@ -95,6 +95,9 @@ namespace Rehawk.UIFramework
                 items.Add(itemObj);
                 
                 CreatedItem?.Invoke(i, items[i]);
+                
+                HandleListIndexControl(i, items[i]);
+                
                 ActivatedItem?.Invoke(i, items[i], itemData[i]);
             }
         }

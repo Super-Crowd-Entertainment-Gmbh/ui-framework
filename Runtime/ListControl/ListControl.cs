@@ -17,5 +17,13 @@ namespace Rehawk.UIFramework
         public abstract void SetCountByData(IEnumerable<object> itemData);
         public abstract void Clear();
         public abstract GameObject GetItem(int index);
+
+        protected virtual void HandleListIndexControl(int index, GameObject itemObj)
+        {
+            if (itemObj.TryGetComponent(out ListIndexControl listIndexControl))
+            {
+                listIndexControl.SetContext(index);
+            }
+        }
     }
 }
