@@ -34,7 +34,7 @@ namespace Rehawk.UIFramework
             for (int i = 0; i < items.Length; i++)
             {
                 CreatedItem?.Invoke(i, items[i]);  
-                HandleListIndexControl(i, items[i]);
+                InformIndexReceiver(i, items[i]);
             }
             
             ClearItems();

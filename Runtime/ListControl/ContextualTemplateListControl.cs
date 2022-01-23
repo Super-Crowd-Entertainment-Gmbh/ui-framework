@@ -102,7 +102,7 @@ namespace Rehawk.UIFramework
                     itemObj.gameObject.SetActive(true);
                     items.Add(itemObj);
                 
-                    HandleListIndexControl(i, itemObj);
+                    InformIndexReceiver(i, itemObj);
 
                     ActivatedItem?.Invoke(baseIndex, items[baseIndex], itemData[baseIndex]);
 
@@ -127,7 +127,7 @@ namespace Rehawk.UIFramework
                     
                     CreatedItem?.Invoke(i, this.items[i]);
                     
-                    HandleListIndexControl(i, itemObj);
+                    InformIndexReceiver(i, itemObj);
 
                     ActivatedItem?.Invoke(i, this.items[i], itemData[i]);
                 }

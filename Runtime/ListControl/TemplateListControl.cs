@@ -96,7 +96,7 @@ namespace Rehawk.UIFramework
                 
                 CreatedItem?.Invoke(i, items[i]);
                 
-                HandleListIndexControl(i, items[i]);
+                InformIndexReceiver(i, items[i]);
                 
                 ActivatedItem?.Invoke(i, items[i], itemData[i]);
             }

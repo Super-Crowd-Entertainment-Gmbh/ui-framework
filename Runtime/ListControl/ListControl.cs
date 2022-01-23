@@ -18,11 +18,11 @@ namespace Rehawk.UIFramework
         public abstract void Clear();
         public abstract GameObject GetItem(int index);
 
-        protected virtual void HandleListIndexControl(int index, GameObject itemObj)
+        protected void InformIndexReceiver(int index, GameObject itemObj)
         {
-            if (itemObj.TryGetComponent(out ListIndexControl listIndexControl))
+            foreach (IListIndexReceiver receiver in itemObj.GetComponentsInChildren<IListIndexReceiver>())
             {
-                listIndexControl.SetContext(index);
+                receiver.ReceiveIndex(index);
             }
         }
     }
