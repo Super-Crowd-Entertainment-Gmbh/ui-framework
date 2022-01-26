@@ -282,6 +282,18 @@ namespace Rehawk.UIFramework
             SetDirty();
         }
 
+        public void CopyContext(Control control)
+        {
+            if (control is Control<TContext> contextControl)
+            {
+                SetContext(contextControl.Context);
+            }
+            else
+            {
+                Debug.LogError($"Given control '{control.GetType().Name}' has not the same context type as '{GetType().Name}.", gameObject);
+            }
+        }
+
         private void SetContextWithoutDirty(TContext context)
         {
             OnBeforeContextChanged();
