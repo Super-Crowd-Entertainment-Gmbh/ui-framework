@@ -17,6 +17,7 @@ namespace Rehawk.UIFramework
         public abstract void SetCountByData(IEnumerable<object> itemData);
         public abstract void Clear();
         public abstract GameObject GetItem(int index);
+        public abstract int GetIndex(GameObject item);
 
         protected void InformIndexReceiver(int index, GameObject itemObj)
         {

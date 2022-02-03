@@ -76,7 +76,12 @@ namespace Rehawk.UIFramework
 
             return null;
         }
-        
+
+        public override int GetIndex(GameObject item)
+        {
+            return items.IndexOf(item);
+        }
+
         private void ClearItems()
         {
             for (int i = 0; i < items.Count; i++)
