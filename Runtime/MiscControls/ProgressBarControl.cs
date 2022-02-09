@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace Rehawk.UIFramework.Controls
+namespace Rehawk.UIFramework
 {
     public class ProgressBarControl : Control<float>
     {
