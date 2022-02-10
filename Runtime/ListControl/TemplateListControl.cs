@@ -14,7 +14,8 @@ namespace Rehawk.UIFramework
         private int capacity;
         private object[] itemData;
         
-        private readonly List<GameObject> items = new List<GameObject>();
+        private readonly List<GameObject> activeItems = new List<GameObject>();
+        private readonly Queue<GameObject> inactiveItems = new Queue<GameObject>();
         
         public override event Action<int, GameObject> CreatedItem;
         public override event Action<int, GameObject, object> ActivatedItem;
@@ -22,12 +23,12 @@ namespace Rehawk.UIFramework
 
         public override int Count
         {
-            get { return items.Count; }
+            get { return activeItems.Count; }
         }
         
         public override IEnumerable<GameObject> Items
         {
-            get { return items; }    
+            get { return activeItems; }    
         }
 
         protected override void Awake()
@@ -66,9 +67,9 @@ namespace Rehawk.UIFramework
 
         public override GameObject GetItem(int index)
         {
-            if (index >= 0 && index < items.Count)
+            if (index >= 0 && index < activeItems.Count)
             {
-                return items[index];
+                return activeItems[index];
             }
 
             return null;
@@ -76,17 +77,18 @@ namespace Rehawk.UIFramework
 
         public override int GetIndex(GameObject item)
         {
-            return items.IndexOf(item);
+            return activeItems.IndexOf(item);
         }
 
         private void ClearItems()
         {
-            for (int i = 0; i < items.Count; i++)
+            for (int i = 0; i < activeItems.Count; i++)
             {
-                Destroy(items[i]);
+                activeItems[i].SetActive(false);
+                inactiveItems.Enqueue(activeItems[i]);
             }
             
-            items.Clear();
+            activeItems.Clear();
         }
 
         private void RefreshItems()
@@ -95,15 +97,28 @@ namespace Rehawk.UIFramework
 
             for (int i = 0; i < capacity; i++)
             {
-                GameObject itemObj = Instantiate(itemTemplate, itemRoot);
-                itemObj.gameObject.SetActive(true);
-                items.Add(itemObj);
+                GameObject itemObj;
                 
-                CreatedItem?.Invoke(i, items[i]);
+                if (inactiveItems.Count > 0)
+                {
+                    itemObj = inactiveItems.Dequeue();
+                    
+                    itemObj.gameObject.SetActive(true);
+                    activeItems.Add(itemObj);
+                }
+                else
+                {
+                    itemObj = Instantiate(itemTemplate, itemRoot);
+                    
+                    itemObj.gameObject.SetActive(true);
+                    activeItems.Add(itemObj);
+                    
+                    CreatedItem?.Invoke(i, activeItems[i]);
+                }
                 
-                InformIndexReceiver(i, items[i]);
+                InformIndexReceiver(i, activeItems[i]);
                 
-                ActivatedItem?.Invoke(i, items[i], itemData[i]);
+                ActivatedItem?.Invoke(i, activeItems[i], itemData[i]);
             }
         }
     }
