@@ -224,7 +224,9 @@ namespace Rehawk.UIFramework
         public abstract bool HasContext { get; }
         
         public abstract void SetContext(object context);
+        public abstract void ResetContext();
         public abstract object GetContext();
+        public abstract void CopyContext(Control control);
     }
 
     public abstract class Control<TContext> : ContextControl
@@ -282,7 +284,7 @@ namespace Rehawk.UIFramework
             SetDirty();
         }
 
-        public void CopyContext(Control control)
+        public override void CopyContext(Control control)
         {
             if (control is Control<TContext> contextControl)
             {
@@ -303,7 +305,7 @@ namespace Rehawk.UIFramework
             AfterContextChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        public void ResetContext()
+        public override void ResetContext()
         {
             SetContext(default);
         }
