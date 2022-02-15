@@ -19,7 +19,10 @@ namespace Rehawk.UIFramework.Adapter
             }
             else
             {
-                label.text = GetValue<object>(Binding).ToString();
+                object value = GetValue<object>(Binding);
+                string text = value != null ? value.ToString() : "";
+                
+                label.text = text;
             }
         }
 
