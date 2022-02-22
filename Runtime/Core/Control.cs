@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using Rehawk.UIFramework.Utilities;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
@@ -248,7 +249,7 @@ namespace Rehawk.UIFramework
         [PropertyOrder(-100)]
         [BoxGroup("ContextBox", false)]
         [HorizontalGroup("ContextBox/Context"), LabelText("Context")]
-        [HideInEditorMode, ShowInInspector, ReadOnly]
+        [HideInEditorMode, ShowInInspector, Sirenix.OdinInspector.ReadOnly]
         public TContext Context { get; private set; }
 
         public override bool HasContext
@@ -300,7 +301,19 @@ namespace Rehawk.UIFramework
         {
             OnBeforeContextChanged();
             BeforeContextChanged?.Invoke(this, EventArgs.Empty);
+            
+            if (Context is INotifyPropertyChanged previousNotifyPropertyChanged)
+            {
+                previousNotifyPropertyChanged.PropertyChanged -= OnPropertyChanged;
+            }
+
             Context = context;
+
+            if (Context is INotifyPropertyChanged newNotifyPropertyChanged)
+            {
+                newNotifyPropertyChanged.PropertyChanged += OnPropertyChanged;
+            }
+            
             OnAfterContextChanged();
             AfterContextChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -324,6 +337,11 @@ namespace Rehawk.UIFramework
         public override object GetContext()
         {
             return Context;
+        }
+
+        private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            SetDirty();
         }
 
         /// <summary>
