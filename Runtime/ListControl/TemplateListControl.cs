@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Sirenix.Serialization;
@@ -17,10 +18,6 @@ namespace Rehawk.UIFramework
         private readonly List<GameObject> activeItems = new List<GameObject>();
         private readonly Queue<GameObject> inactiveItems = new Queue<GameObject>();
         
-        public override event Action<int, GameObject> CreatedItem;
-        public override event Action<int, GameObject, object> ActivatedItem;
-        public override event Action<int, GameObject, object> DeactivatedItem;
-
         public override int Count
         {
             get { return activeItems.Count; }
@@ -47,9 +44,9 @@ namespace Rehawk.UIFramework
             SetDirty();
         }
 
-        public override void SetCountByData(IEnumerable<object> itemData)
+        public override void SetCountByData(IEnumerable itemData)
         {
-            this.itemData = itemData.ToArray();
+            this.itemData = itemData.Cast<object>().ToArray();
             this.capacity = this.itemData.Length;
             
             RefreshItems();
@@ -113,12 +110,12 @@ namespace Rehawk.UIFramework
                     itemObj.gameObject.SetActive(true);
                     activeItems.Add(itemObj);
                     
-                    CreatedItem?.Invoke(i, activeItems[i]);
+                    InvokeCallback(ListControlCallbacks.Created, i, activeItems[i], null);
                 }
                 
                 InformIndexReceiver(i, activeItems[i]);
                 
-                ActivatedItem?.Invoke(i, activeItems[i], itemData[i]);
+                InvokeCallback(ListControlCallbacks.Activated, i, activeItems[i], itemData[i]);
             }
         }
     }

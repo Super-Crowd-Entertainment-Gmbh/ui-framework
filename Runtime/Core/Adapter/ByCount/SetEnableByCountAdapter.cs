@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Rehawk.UIFramework.Adapter
+namespace Rehawk.UIFramework
 {
     public class SetEnableByCountAdapter : Adapter<ListControl>
     {

@@ -1,0 +1,18 @@
+{
+    "name": "Rehawk.UIFramework.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:6286bbeeffb94d94f9b6f0983fb86484"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

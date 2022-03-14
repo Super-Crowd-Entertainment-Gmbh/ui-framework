@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -13,10 +14,6 @@ namespace Rehawk.UIFramework
         private int count;
         private object[] itemData;
         
-        public override event Action<int, GameObject> CreatedItem;
-        public override event Action<int, GameObject, object> ActivatedItem;
-        public override event Action<int, GameObject, object> DeactivatedItem;
-
         public override int Count
         {
             get { return items.Length; }
@@ -33,7 +30,7 @@ namespace Rehawk.UIFramework
 
             for (int i = 0; i < items.Length; i++)
             {
-                CreatedItem?.Invoke(i, items[i]);  
+                InvokeCallback(ListControlCallbacks.Created, i, items[i], null);
                 InformIndexReceiver(i, items[i]);
             }
             
@@ -48,9 +45,9 @@ namespace Rehawk.UIFramework
             SetDirty();
         }
 
-        public override void SetCountByData(IEnumerable<object> itemData)
+        public override void SetCountByData(IEnumerable itemData)
         {
-            this.itemData = itemData.ToArray();
+            this.itemData = itemData.Cast<object>().ToArray();
             this.count = this.itemData.Length;
             
             RefreshItems();
@@ -96,12 +93,12 @@ namespace Rehawk.UIFramework
                 if (i < count)
                 {
                     items[i].SetActive(true);
-                    ActivatedItem?.Invoke(i, items[i], itemData[i]);
+                    InvokeCallback(ListControlCallbacks.Activated, i, items[i], i < itemData.Length ? itemData[i] : null);
                 }
                 else
                 {
                     items[i].SetActive(keepEmptyActive);
-                    DeactivatedItem?.Invoke(i, items[i], itemData[i]);
+                    InvokeCallback(ListControlCallbacks.Deactivated, i, items[i], i < itemData.Length ? itemData[i] : null);
                 }
             }
         }

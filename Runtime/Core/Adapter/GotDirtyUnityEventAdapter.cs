@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 
-namespace Rehawk.UIFramework.Adapter
+namespace Rehawk.UIFramework
 {
     public class GotDirtyUnityEventAdapter : Adapter<Control>
     {

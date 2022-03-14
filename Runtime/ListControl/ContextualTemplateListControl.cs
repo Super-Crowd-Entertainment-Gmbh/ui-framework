@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Sirenix.Serialization;
@@ -15,10 +16,6 @@ namespace Rehawk.UIFramework
         private object[] itemData;
         
         private readonly List<GameObject> items = new List<GameObject>();
-
-        public override event Action<int, GameObject> CreatedItem;
-        public override event Action<int, GameObject, object> ActivatedItem;
-        public override event Action<int, GameObject, object> DeactivatedItem;
 
         public override int Count
         {
@@ -49,9 +46,9 @@ namespace Rehawk.UIFramework
             SetDirty();
         }
 
-        public override void SetCountByData(IEnumerable<object> itemData)
+        public override void SetCountByData(IEnumerable itemData)
         {
-            this.itemData = itemData.ToArray();
+            this.itemData = itemData.Cast<object>().ToArray();
             this.capacity = this.itemData.Length;
             
             RefreshItemsTypeBased(this.itemData);
@@ -86,7 +83,7 @@ namespace Rehawk.UIFramework
         {
             for (int i = 0; i < items.Count; i++)
             {
-                DeactivatedItem?.Invoke(i, items[i], itemData[i]);
+                InvokeCallback(ListControlCallbacks.Deactivated, i, items[i], itemData[i]);
                 Destroy(items[i]);
             }
             items.Clear();
@@ -109,7 +106,7 @@ namespace Rehawk.UIFramework
                 
                     InformIndexReceiver(i, itemObj);
 
-                    ActivatedItem?.Invoke(baseIndex, items[baseIndex], itemData[baseIndex]);
+                    InvokeCallback(ListControlCallbacks.Activated, baseIndex, items[baseIndex], itemData[baseIndex]);
 
                     baseIndex++;
                 }
@@ -130,11 +127,11 @@ namespace Rehawk.UIFramework
                     itemObj.gameObject.SetActive(true);
                     this.items.Add(itemObj);
                     
-                    CreatedItem?.Invoke(i, this.items[i]);
+                    InvokeCallback(ListControlCallbacks.Created, i, this.items[i], itemData[i]);
                     
                     InformIndexReceiver(i, itemObj);
 
-                    ActivatedItem?.Invoke(i, this.items[i], itemData[i]);
+                    InvokeCallback(ListControlCallbacks.Activated, i, this.items[i], itemData[i]);
                 }
                 else
                 {
