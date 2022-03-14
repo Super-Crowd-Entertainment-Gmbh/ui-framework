@@ -7,14 +7,6 @@ namespace Rehawk.UIFramework
 {
     public class UIPoller : MonoBehaviour
     {
-        private void Awake()
-        {
-            inRefresh = false;
-            isQuitting = false;
-            refreshables.Clear();
-            nextRefreshables.Clear();
-        }
-
         private void Update()
         {
             inRefresh = true;
@@ -58,6 +50,15 @@ namespace Rehawk.UIFramework
 
         private static UIPoller instance;
         
+		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+		private static void Init()
+		{
+			inRefresh = false;
+            isQuitting = false;
+            refreshables.Clear();
+            nextRefreshables.Clear();
+		}
+	
         public static void Tag(IRefreshable refreshable)
         {
             if (isQuitting)
