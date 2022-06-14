@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 using UnityEngine;
@@ -25,14 +25,34 @@ namespace Rehawk.UIFramework
             object value = GetValue<object>(Binding);
 
             bool isValid = false;
+
+            // Hack for unity types which are not recognised as null by normal == check. (eg. Sprite)
+            if (value != null && value.Equals(null))
+            {
+                value = null;
+            }
             
             switch (@operator)
             {
                 case Operator.Equals:
-                    isValid = Equals(value, comparedTo);
+                    if (value != null)
+                    {
+                        isValid = value.Equals(comparedTo);
+                    }
+                    else
+                    {
+                        isValid = Equals(value, comparedTo);
+                    }
                     break;
                 case Operator.NotEquals:
-                    isValid = !Equals(value, comparedTo);
+                    if (value != null)
+                    {
+                        isValid = !value.Equals(comparedTo);
+                    }
+                    else
+                    {
+                        isValid = !Equals(value, comparedTo);
+                    }
                     break;
             }
 
@@ -51,6 +71,25 @@ namespace Rehawk.UIFramework
                         break;
                     case Operator.GreaterOrEqual:
                         isValid = intValue >= intComparedTo;
+                        break;
+                }
+            }
+
+            if (!isValid && value is uint uintValue && comparedTo is uint uintComparedTo)
+            {
+                switch (@operator)
+                {
+                    case Operator.Less:
+                        isValid = uintValue < uintComparedTo;
+                        break;
+                    case Operator.LessOrEqual:
+                        isValid = uintValue <= uintComparedTo;
+                        break;
+                    case Operator.Greater:
+                        isValid = uintValue > uintComparedTo;
+                        break;
+                    case Operator.GreaterOrEqual:
+                        isValid = uintValue >= uintComparedTo;
                         break;
                 }
             }
@@ -109,6 +148,42 @@ namespace Rehawk.UIFramework
             wasSetBefore = true;
         }
 
+        [ContextMenu("Compare To Int")]
+        public void CompareToInt()
+        {
+            comparedTo = 0;
+        }
+        
+        [ContextMenu("Compare To UInt")]
+        public void CompareToUInt()
+        {
+            comparedTo = (uint) 0;
+        }
+        
+        [ContextMenu("Compare To Float")]
+        public void CompareToFloat()
+        {
+            comparedTo = 0f;
+        }
+        
+        [ContextMenu("Compare To Double")]
+        public void CompareToDouble()
+        {
+            comparedTo = (double) 0;
+        }
+        
+        [ContextMenu("Compare To Bool")]
+        public void CompareToBool()
+        {
+            comparedTo = false;
+        }
+        
+        [ContextMenu("Compare To String")]
+        public void CompareToString()
+        {
+            comparedTo = "";
+        }
+        
         private enum Operator
         {
             [InspectorName("==")]
