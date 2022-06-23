@@ -14,16 +14,16 @@ namespace Rehawk.UIFramework
 
             listControl.Clear();
             
-            IEnumerable value = GetValue<IEnumerable>(Binding);
+            var value = GetValue<IEnumerable>(Binding);
             if (!ObjectUtility.IsNull(value))
             {
-                if (value is IList)
-                {
-                    listControl.SetCountByData(value);
-                } 
-                else if (value is IDictionary dictionary)
+                if (value is IDictionary dictionary)
                 {
                     listControl.SetCountByData(dictionary.Values);
+                }
+                else
+                {
+                    listControl.SetCountByData(value);
                 }
             }
         }

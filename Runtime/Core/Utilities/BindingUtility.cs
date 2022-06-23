@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.Events;
 
 namespace Rehawk.UIFramework.Utilities
 {
+    // TODO: Some caching would be nice!
     public static class BindingUtility
     {
         public static object GetValueByPath(object instance, string path)
@@ -64,10 +66,58 @@ namespace Rehawk.UIFramework.Utilities
                     }
                     else
                     {
-                        MethodInfo methodInfo = currentType.GetMethod(memberName, BindingFlags.Instance | BindingFlags.Public);
+                        int braceStart = memberName.IndexOf("(");
+                        int braceEnd = memberName.IndexOf(")");
+
+                        string parameterValue = string.Empty;
+                        
+                        MethodInfo methodInfo;
+                        
+                        if (braceStart > 0)
+                        {
+                            parameterValue = memberName.Substring(braceStart + 1, braceEnd - braceStart - 1);
+                            parameterValue = parameterValue.Replace("\"", "");
+                            parameterValue = parameterValue.Replace("'", "");
+                            
+                            memberName = memberName.Substring(0, braceStart);
+                            
+                            methodInfo = currentType.GetMethods(BindingFlags.Instance | BindingFlags.Public)
+                                .FirstOrDefault(m =>
+                                {
+                                    if (m.Name != memberName)
+                                    {
+                                        return false;
+                                    }
+
+                                    ParameterInfo[] parameters = m.GetParameters();
+                                    if (parameters.Length != 1)
+                                    {
+                                        return false;
+                                    }
+
+                                    return parameters[0].ParameterType == typeof(string);
+                                });
+                        }
+                        else
+                        {
+                            methodInfo = currentType.GetMethods(BindingFlags.Instance | BindingFlags.Public)
+                                .FirstOrDefault(m => m.Name == memberName && m.GetParameters().Length == 0);
+                        }
+
                         if (methodInfo != null)
                         {
-                            value = methodInfo.Invoke(value, null);
+                            if (string.IsNullOrEmpty(parameterValue))
+                            {
+                                value = methodInfo.Invoke(value, null);
+                            }
+                            else
+                            {
+                                value = methodInfo.Invoke(value, new object[]
+                                {
+                                    parameterValue
+                                });
+                            }
+                            
                             currentType = value != null ? value.GetType() : null;
                         }
                     }
@@ -78,21 +128,21 @@ namespace Rehawk.UIFramework.Utilities
                     break;
                 }
             }
-            
+
             return value;
         }
 
-        public static void GetMemberPathsByDepth(Type baseType, int depth, ref List<MemberPointer> pointers)
+        public static void GetMemberPathsByDepth(Type baseType, int depth, ref List<MemberPointer> pointers, string basePath = "", string prettifiedBasePath = "")
         {
             pointers.Add(new MemberPointer
             {
                 Type = MemberPointer.MemberTypes.Property,
                 Name = "Self",
-                Path = "",
-                PrettifiedPath = "Self"
+                Path = basePath,
+                PrettifiedPath = $"{prettifiedBasePath}.Self"
             });
             
-            GetMemberPathsByDepth(baseType, "", "", depth, ref pointers);
+            GetMemberPathsByDepth(baseType, basePath, prettifiedBasePath, depth, ref pointers);
         }
 
         private static int GetMemberPathsByDepth(Type baseType, string basePath, string prettifiedBasePath, int depth, ref List<MemberPointer> pointers)
@@ -205,29 +255,44 @@ namespace Rehawk.UIFramework.Utilities
             
             foreach (MethodInfo methodInfo in methodInfos)
             {
-                // Skip methods which are generic, without return type, with parameters and getters/setters of properties
-                if (methodInfo.IsGenericMethod || methodInfo.ReturnType == typeof(void) || methodInfo.GetParameters().Length > 0 || methodInfo.Name.StartsWith("get_") || methodInfo.Name.StartsWith("set_"))
+                // Skip methods which are generic, without return type and getters/setters of properties
+                if (methodInfo.IsGenericMethod || methodInfo.ReturnType == typeof(void) || methodInfo.Name.StartsWith("get_") || methodInfo.Name.StartsWith("set_"))
+                    continue;
+                
+                ParameterInfo[] parameters = methodInfo.GetParameters();
+
+                // Skip methods which have more then one parameter or non string parameters.
+                if (parameters.Length > 1 || (parameters.Length == 1 && parameters[0].ParameterType != typeof(string))) 
                     continue;
             
                 string internalBasePath;
                 string internalPrettifiedBasePath;
-                
-                if (string.IsNullOrEmpty(basePath))
+
+                string methodName = $"{methodInfo.Name}(";
+
+                if (parameters.Length > 0)
                 {
-                    internalBasePath = $"{methodInfo.Name}";
-                }
-                else
-                {
-                    internalBasePath = $"{basePath}.{methodInfo.Name}";
+                    methodName += $"\"{parameters[0].Name.ToLower()}\"";
                 }
 
-                if (string.IsNullOrEmpty(prettifiedBasePath))
+                methodName += ")";
+
+                if (string.IsNullOrEmpty(basePath))
                 {
-                    internalPrettifiedBasePath = $"Methods.{methodInfo.Name}()";
+                    internalBasePath = $"{methodName}";
                 }
                 else
                 {
-                    internalPrettifiedBasePath = $"{prettifiedBasePath}.Methods.{methodInfo.Name}()";
+                    internalBasePath = $"{basePath}.{methodName}";
+                }
+                
+                if (string.IsNullOrEmpty(prettifiedBasePath))
+                {
+                    internalPrettifiedBasePath = $"Methods.{methodName}";
+                }
+                else
+                {
+                    internalPrettifiedBasePath = $"{prettifiedBasePath}.Methods.{methodName}";
                 }
 
                 string prettifiedPath = internalPrettifiedBasePath;

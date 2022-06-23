@@ -9,8 +9,14 @@ namespace Rehawk.UIFramework
             if (HasControl)
             {
                 object source = Control;
-                
-                if (source is ContextControl contextControl)
+
+                bool isReferencingControl = path.StartsWith("_Control");
+
+                if (isReferencingControl)
+                {
+                    path = path.Substring(8);
+                }
+                else if (source is ContextControl contextControl)
                 {
                     source = contextControl.GetContext();
                 }

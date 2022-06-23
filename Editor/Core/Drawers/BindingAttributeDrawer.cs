@@ -17,7 +17,8 @@ namespace Rehawk.UIFramework
         private string[] options;
 
         private BindingUtility.MemberPointer selectedPointer;
-        private Type previousType;
+        private Type previousContextType;
+        private Type previousControlType;
         
         protected override void Initialize()
         {
@@ -67,11 +68,12 @@ namespace Rehawk.UIFramework
         {
             object serializedObject = this.Property.SerializationRoot.ValueEntry.WeakSmartValue;
 
-            Type baseType = null;
-
+            Type contextType = null;
+            Type controlType = null;
+            
             if (serializedObject != null)
             {
-                baseType = serializedObject.GetType();
+                controlType = serializedObject.GetType();
             }
             
             if (serializedObject is Adapter adapter)
@@ -81,37 +83,43 @@ namespace Rehawk.UIFramework
 
             if (serializedObject is Control control)
             {
-                baseType = control.GetType();
-            }
-            
-            if (serializedObject is ContextControl contextControl)
-            {
-                baseType = contextControl.ContextType;
+                controlType = control.GetType();
             }
 
-            if (previousType != baseType)
+            if (serializedObject is ContextControl contextControl)
+            {
+                contextType = contextControl.ContextType;
+            }
+
+            if (previousContextType != contextType || previousControlType != controlType)
             {
                 var pointerList = new List<BindingUtility.MemberPointer>(); 
                 var optionList = new List<string>();
 
-                if (baseType != null)
+                if (contextType != null)
                 {
-                    BindingUtility.GetMemberPathsByDepth(baseType, MAX_BINDING_DEPTH, ref pointerList);
-
-                    pointerList = pointerList.OrderBy(p => p.PrettifiedPath).ThenBy(p => p.Type).ToList();
-                
-                    foreach (BindingUtility.MemberPointer pointer in pointerList)
-                    {
-                        optionList.Add(pointer.PrettifiedPath.Replace('.', '/'));
-                    }
-
-                    pointers = pointerList.ToArray();
-                    options = optionList.ToArray();
-
-                    selectedPointer = pointerList.FirstOrDefault(p => p.Path == this.ValueEntry.SmartValue);    
+                    BindingUtility.GetMemberPathsByDepth(contextType, MAX_BINDING_DEPTH, ref pointerList, "", "Context");
                 }
 
-                previousType = baseType;
+                if (controlType != null)
+                {
+                    BindingUtility.GetMemberPathsByDepth(controlType, MAX_BINDING_DEPTH, ref pointerList, "_Control", "Control");
+                }
+                
+                pointerList = pointerList.OrderBy(p => p.PrettifiedPath).ThenBy(p => p.Type).ToList();
+                
+                foreach (BindingUtility.MemberPointer pointer in pointerList)
+                {
+                    optionList.Add(pointer.PrettifiedPath.Replace('.', '/'));
+                }
+
+                pointers = pointerList.ToArray();
+                options = optionList.ToArray();
+
+                selectedPointer = pointerList.FirstOrDefault(p => p.Path == this.ValueEntry.SmartValue);    
+
+                previousContextType = contextType;
+                previousControlType = controlType;
             }
         }
     }

@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Rehawk.UIFramework
 {
     [Serializable]
-    public class DateTimeToStringFormatter : Formatter
+    public class DateTimeToStringFormatter : FormatterBase
     {
         [SerializeField] private string format;
         

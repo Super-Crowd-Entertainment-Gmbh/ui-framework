@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Sirenix.OdinInspector;
+﻿using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 using UnityEngine;
 
@@ -11,7 +10,7 @@ namespace Rehawk.UIFramework
         [PropertyOrder(-1)]
         [BoxGroup("ContextBox")]
         [SerializeField] private string binding;
-        [OdinSerialize] private Formatter formatter;
+        [OdinSerialize] private FormatterBase[] formatters = new FormatterBase[0];
 
         protected string Binding
         {
@@ -20,19 +19,29 @@ namespace Rehawk.UIFramework
 
         protected override T GetValue<T>(string path, T fallback = default)
         {
-            T value = base.GetValue(path, fallback);
+            object value = base.GetValue(path, fallback);
 
-            if (formatter != null)
+            if (formatters != null)
             {
-                object formattedValue = formatter.ApplyFormat(value);
+                object formattedValue = value;
                 
-                if (formattedValue is T castedValue)
+                for (int i = 0; i < formatters.Length; i++)
                 {
-                    return castedValue;
+                    formattedValue = formatters[i].ApplyFormat(formattedValue);
+                }
+                
+                if (formattedValue is T castedValueA)
+                {
+                    return castedValueA;
                 }
             }
+            
+            if (value is T castedValueB)
+            {
+                return castedValueB;
+            }
 
-            return value;
+            return default;
         }
     }
 }
