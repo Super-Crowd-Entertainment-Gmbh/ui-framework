@@ -83,7 +83,10 @@ namespace Rehawk.UIFramework
                     else
                     {
                         var control = item.GetComponent<GenericControl>();
-                        control.SetContext(data);
+                        if (control)
+                        {
+                            control.SetContext(data);
+                        }
                     }
                     break;
                 case ListControlCallbacks.Deactivated:
