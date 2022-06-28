@@ -19,12 +19,15 @@ namespace Rehawk.UIFramework
         private BindingUtility.MemberPointer selectedPointer;
         private Type previousContextType;
         private Type previousControlType;
+
+        private bool hasError;
         
         protected override void Initialize()
         {
             base.Initialize();
 
             Evaluate();
+            Validate();
         }
 
         protected override void DrawPropertyLayout(GUIContent label)
@@ -42,7 +45,18 @@ namespace Rehawk.UIFramework
                 
                 EditorGUI.BeginChangeCheck();
                 {
-                    path = EditorGUILayout.TextField(label, path);
+                    EditorGUILayout.PrefixLabel(label);
+                    
+                    Color previousColor = GUI.color;
+
+                    if (hasError)
+                    {
+                        GUI.color = Color.red;
+                    }
+
+                    path = EditorGUILayout.TextField(GUIContent.none, path);
+                    
+                    GUI.color = previousColor;
 
                     if (pointers.Length > 0)
                     {
@@ -59,6 +73,7 @@ namespace Rehawk.UIFramework
                 if (EditorGUI.EndChangeCheck())
                 {
                     this.ValueEntry.SmartValue = path;
+                    Validate();
                 }
             }
             EditorGUILayout.EndHorizontal();
@@ -76,12 +91,12 @@ namespace Rehawk.UIFramework
                 controlType = serializedObject.GetType();
             }
             
-            if (serializedObject is Adapter adapter)
+            if (serializedObject is AdapterBase adapter)
             {
                 serializedObject = adapter.GetControl();
             }
 
-            if (serializedObject is Control control)
+            if (serializedObject is ControlBase control)
             {
                 controlType = control.GetType();
             }
@@ -120,6 +135,20 @@ namespace Rehawk.UIFramework
 
                 previousContextType = contextType;
                 previousControlType = controlType;
+            }
+        }
+
+        private void Validate()
+        {
+            string path = this.ValueEntry.SmartValue;
+
+            if (!string.IsNullOrEmpty(path) && !path.Contains("("))
+            {
+                hasError = pointers.Count(p => p.Path == path) == 0;
+            }
+            else
+            {
+                hasError = false;
             }
         }
     }

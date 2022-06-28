@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Rehawk.UIFramework
 {
     [Serializable]
-    public class RootVisibilityStrategy : VisibilityStrategy
+    public class RootVisibilityStrategy : VisibilityStrategyBase
     {
         [SerializeField] private GameObject root;
 

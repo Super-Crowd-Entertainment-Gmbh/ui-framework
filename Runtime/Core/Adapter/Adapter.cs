@@ -10,19 +10,19 @@ using Object = UnityEngine.Object;
 
 namespace Rehawk.UIFramework
 {
-    public abstract class Adapter : UIBehaviour
+    public abstract class AdapterBase : UIBehaviour
     {
         public abstract Type ControlType { get; }
         
-        public abstract Control GetControl();
+        public abstract ControlBase GetControl();
     }
     
     [ShowOdinSerializedPropertiesInInspector]
-    public abstract class Adapter<TControl> : Adapter, 
+    public abstract class ControlAdapter<TControl> : AdapterBase, 
         ISerializationCallbackReceiver, 
         ISupportsPrefabSerialization,
         IRefreshable
-        where TControl : Control
+        where TControl : ControlBase
     {
         [LabelText("Control")]
         [DisableInPlayMode]
@@ -100,7 +100,7 @@ namespace Rehawk.UIFramework
             }
         }
 
-        public override Control GetControl()
+        public override ControlBase GetControl()
         {
             return Control;
         }
@@ -200,7 +200,7 @@ namespace Rehawk.UIFramework
         #endregion
     }
 
-    public abstract class Adapter<TControl, TContext> : Adapter<TControl>
+    public abstract class ControlAdapter<TControl, TContext> : ControlAdapter<TControl>
         where TControl : Control<TContext>
     {
         public bool HasContext
@@ -238,6 +238,54 @@ namespace Rehawk.UIFramework
         protected virtual void OnBeforeContextChanged() {}
         protected virtual void OnAfterContextChanged() {}
 
+        private void OnBeforeContextChanged(object sender, EventArgs e)
+        {
+            OnBeforeContextChanged();
+        }
+        
+        private void OnAfterContextChanged(object sender, EventArgs e)
+        {
+            OnAfterContextChanged();
+        }
+    }
+    
+    public abstract class ContextAdapter<TContext> : ControlAdapter<ContextControl>
+    {
+        public bool HasContext
+        {
+            get { return HasControl && Control.HasContext; }
+        }
+    
+        public TContext Context
+        {
+            get { return HasControl ? (TContext) Control.GetContext() : default; }
+        }
+    
+        protected override void Awake()
+        {
+            base.Awake();
+            
+            if (HasControl)
+            {
+                Control.BeforeContextChanged += OnBeforeContextChanged;
+                Control.AfterContextChanged += OnAfterContextChanged;
+            }
+        }
+        
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            
+            if (HasControl)
+            {
+                Control.BeforeContextChanged -= OnBeforeContextChanged;
+                Control.AfterContextChanged -= OnAfterContextChanged;
+            }
+        }
+        
+        protected virtual void OnBeforeContextChanged() {}
+        protected virtual void OnAfterContextChanged() {}
+    
         private void OnBeforeContextChanged(object sender, EventArgs e)
         {
             OnBeforeContextChanged();

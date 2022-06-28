@@ -3,7 +3,7 @@
 namespace Rehawk.UIFramework
 {
     [Serializable]
-    public abstract class VisibilityStrategy
+    public abstract class VisibilityStrategyBase
     {
         public abstract bool IsVisible { get; }
         public abstract void SetVisible(bool visible, Action callback);

@@ -2,7 +2,7 @@
 
 namespace Rehawk.UIFramework
 {
-    public abstract class BindingAdapter : Adapter<Control>
+    public abstract class BindingAdapter : ControlAdapter<ControlBase>
     {
         protected virtual T GetValue<T>(string path, T fallback = default)
         {

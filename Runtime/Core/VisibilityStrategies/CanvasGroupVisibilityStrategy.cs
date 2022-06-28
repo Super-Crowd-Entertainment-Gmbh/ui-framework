@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Rehawk.UIFramework
 {
     [Serializable]
-    public class CanvasGroupVisibilityStrategy : VisibilityStrategy
+    public class CanvasGroupVisibilityStrategy : VisibilityStrategyBase
     {
         [SerializeField] private CanvasGroup canvasGroup;
         [SerializeField] private bool toggleInteractable = true;

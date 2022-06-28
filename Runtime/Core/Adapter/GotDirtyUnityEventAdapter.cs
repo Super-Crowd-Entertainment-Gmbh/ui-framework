@@ -3,7 +3,7 @@ using UnityEngine.Events;
 
 namespace Rehawk.UIFramework
 {
-    public class GotDirtyUnityEventAdapter : Adapter<Control>
+    public class GotDirtyUnityEventAdapter : ControlAdapter<ControlBase>
     {
         [SerializeField] private UnityEvent gotDirty;
         

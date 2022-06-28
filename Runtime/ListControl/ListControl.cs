@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Rehawk.UIFramework
 {
-    public abstract class ListControl : Control
+    public abstract class ListControl : ControlBase
     {
         private Action<int, GameObject, object> onCreated;
         private Action<int, GameObject, object> onActivated;

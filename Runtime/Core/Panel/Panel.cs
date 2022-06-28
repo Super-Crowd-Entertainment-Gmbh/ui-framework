@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 using UnityEngine;
@@ -21,19 +22,32 @@ namespace Rehawk.UIFramework
         [SerializeField] private bool hiddenByDefault;
 
         [BoxGroup("StrategyBox", false)]
+        [DisableInPlayMode]
+        [Tooltip("If TRUE, all other panels tagged with isMono are closed.")]
+        [SerializeField] private bool isMono;
+        
+        [BoxGroup("StrategyBox", false)]
+        [DisableInPlayMode]
+        [SerializeField] private ParentConstraint parentConstraint = ParentConstraint.None;
+        
+        [Space]
+        
+        [BoxGroup("StrategyBox", false)]
         [LabelText("Strategy")]
         [SerializeField] private bool useStrategy;
         
         [BoxGroup("StrategyBox", false)]
         [HideLabel, ShowIf("@this.useStrategy")]
-        [ShowInInspector] private VisibilityStrategy visibilityStrategy;
+        [ShowInInspector] private VisibilityStrategyBase visibilityStrategy;
         
         [Space]
         
         [SerializeField] public UnityEvent becameVisible;
         [SerializeField] public UnityEvent becameInvisible;
 
-        private bool isStarted;
+        private bool isInitialized;
+        
+        private Panel parentPanel;
 
         public event PanelVisibilityEvent BecameVisible;
         public event PanelVisibilityEvent BecameInvisible;
@@ -51,21 +65,49 @@ namespace Rehawk.UIFramework
             }
         }
 
+        public Panel ParentPanel
+        {
+            get { return parentPanel; }
+        }
+
         protected override void Awake()
         {
             base.Awake();
 
-            gameObject.SetActive(true);
-            SetVisible(true);
-        }
+            parentPanel = GetComponentsInParent<Panel>().FirstOrDefault(p => p != this);
 
-        protected override void Start()
+            if (parentPanel)
+            {
+                parentPanel.BecameVisible += OnParentPanelBecameVisible;    
+                parentPanel.BecameInvisible += OnParentPanelBecameInvisible;    
+            }
+
+            if (isMono)
+            {
+                MonoPanels.Register(this);
+            }
+            
+            SetVisible(true);
+
+            isInitialized = true;
+            
+            UIPoller.RunCoroutine(SetInitialVisibilityDelayed());
+		}
+
+        protected override void OnDestroy()
         {
-            base.Start();
+            base.OnDestroy();
             
-            isStarted = true;
+            if (parentPanel)
+            {
+                parentPanel.BecameVisible -= OnParentPanelBecameVisible;    
+                parentPanel.BecameInvisible -= OnParentPanelBecameInvisible;    
+            }
             
-            StartCoroutine(SetInitialVisibilityDelayed());
+            if (isMono)
+            {
+                MonoPanels.Unregister(this);
+            }
         }
 
         public void SetVisible(bool visible)
@@ -92,9 +134,9 @@ namespace Rehawk.UIFramework
         
         private void HandleVisibilityChange()
         {
-            if (!isStarted)
+            if (!isInitialized)
                 return;
-            
+
             if (IsVisible)
             {
                 BecameVisible?.Invoke(this);
@@ -115,6 +157,22 @@ namespace Rehawk.UIFramework
             SetVisible(!hiddenByDefault);
         }
         
+        private void OnParentPanelBecameVisible(Panel panel)
+        {
+            if (parentConstraint == ParentConstraint.ShowWith || parentConstraint == ParentConstraint.HideAndShowWith)
+            {
+                SetVisible(true);
+            }
+        }
+
+        private void OnParentPanelBecameInvisible(Panel panel)
+        {
+            if (parentConstraint == ParentConstraint.HideWith || parentConstraint == ParentConstraint.HideAndShowWith)
+            {
+                SetVisible(false);
+            }
+        }
+
         #region SERIALIZATION
 
         [SerializeField, HideInInspector] private SerializationData serializationData;
@@ -147,9 +205,17 @@ namespace Rehawk.UIFramework
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
             UnitySerializationUtility.DeserializeUnityObject(this, ref this.serializationData);
-            visibilityStrategy = SerializationUtility.DeserializeValue<VisibilityStrategy>(visibilityStrategyData, DataFormat.Binary, visibilityStrategyReferenceResolverData);
+            visibilityStrategy = SerializationUtility.DeserializeValue<VisibilityStrategyBase>(visibilityStrategyData, DataFormat.Binary, visibilityStrategyReferenceResolverData);
         }
 
         #endregion
+
+        public enum ParentConstraint
+        {
+            None,
+            HideWith,
+            ShowWith,
+            HideAndShowWith,
+        }
     }
 }

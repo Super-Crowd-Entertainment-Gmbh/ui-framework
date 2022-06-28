@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -85,6 +86,16 @@ namespace Rehawk.UIFramework
             
             refreshables.Remove(refreshable);
             nextRefreshables.Remove(refreshable);
+        }
+
+        public static Coroutine RunCoroutine(IEnumerator routine)
+        {
+            if (isQuitting)
+                return default;
+
+            CheckPollerInstance();
+
+            return instance.StartCoroutine(routine);
         }
 
         private static void CheckPollerInstance()

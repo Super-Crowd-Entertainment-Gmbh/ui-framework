@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Rehawk.UIFramework
 {
-    public class TabViewControl : Control
+    public class TabViewControl : ControlBase
     {
         [SerializeField] private Panel defaultTab;
         [SerializeField] private Panel[] tabs;

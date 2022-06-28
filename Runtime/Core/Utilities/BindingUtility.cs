@@ -139,7 +139,7 @@ namespace Rehawk.UIFramework.Utilities
                 Type = MemberPointer.MemberTypes.Property,
                 Name = "Self",
                 Path = basePath,
-                PrettifiedPath = $"{prettifiedBasePath}.Self"
+                PrettifiedPath = $"{prettifiedBasePath}.Self [{baseType.GetFriendlyName()}]"
             });
             
             GetMemberPathsByDepth(baseType, basePath, prettifiedBasePath, depth, ref pointers);
@@ -186,7 +186,7 @@ namespace Rehawk.UIFramework.Utilities
                 {
                     if (GetMemberPathsByDepth(fieldInfo.FieldType, internalBasePath, internalPrettifiedBasePath, Mathf.Max(0, depth - 1), ref pointers) > 0)
                     {
-                        prettifiedPath += ".Self";
+                        prettifiedPath += $".Self [{fieldInfo.FieldType.GetFriendlyName()}]";
                     }
                 }
 
@@ -236,7 +236,7 @@ namespace Rehawk.UIFramework.Utilities
                 {
                     if (GetMemberPathsByDepth(propertyInfo.PropertyType, internalBasePath, internalPrettifiedBasePath, Mathf.Max(0, depth - 1), ref pointers) > 0)
                     {
-                        prettifiedPath += ".Self";
+                        prettifiedPath += $".Self [{propertyInfo.PropertyType.GetFriendlyName()}]";
                     }
                 }
                 
@@ -292,7 +292,7 @@ namespace Rehawk.UIFramework.Utilities
                 }
                 else
                 {
-                    internalPrettifiedBasePath = $"{prettifiedBasePath}.Methods.{methodName}";
+                    internalPrettifiedBasePath = $"{prettifiedBasePath}.Methods.{methodName} [{methodInfo.ReturnType.GetFriendlyName()}]";
                 }
 
                 string prettifiedPath = internalPrettifiedBasePath;

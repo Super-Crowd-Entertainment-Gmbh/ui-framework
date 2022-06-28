@@ -12,7 +12,7 @@ using Object = UnityEngine.Object;
 namespace Rehawk.UIFramework
 {
     [ShowOdinSerializedPropertiesInInspector]
-    public abstract class Control : UIBehaviour, 
+    public abstract class ControlBase : UIBehaviour, 
         ISerializationCallbackReceiver, 
         ISupportsPrefabSerialization,
         IRefreshable
@@ -22,7 +22,7 @@ namespace Rehawk.UIFramework
 
         private Panel parentPanel;
 
-        private readonly Dictionary<string, Action<Control>> commandHandlers = new Dictionary<string, Action<Control>>();
+        private readonly Dictionary<string, Action<ControlBase>> commandHandlers = new Dictionary<string, Action<ControlBase>>();
         
         public event EventHandler GotDirty;
 
@@ -131,7 +131,7 @@ namespace Rehawk.UIFramework
 
         public void SendCommand(string commandName)
         {
-            if (commandHandlers.TryGetValue(commandName, out Action<Control> handler))
+            if (commandHandlers.TryGetValue(commandName, out Action<ControlBase> handler))
             {
                 handler.Invoke(this);
             }
@@ -141,11 +141,11 @@ namespace Rehawk.UIFramework
             }
         }
         
-        public void RegisterCommandHandler<T>(string commandName, Action<T> callback) where T : Control
+        public void RegisterCommandHandler<T>(string commandName, Action<T> callback) where T : ControlBase
         {
             Assert.IsTrue(this is T, $"Command '{commandName}': The control type used in callback differs from the actual control type.");
 
-            void CapsuledCallback(Control control)
+            void CapsuledCallback(ControlBase control)
             {
                 if (control is T castedControl)
                 {
@@ -169,7 +169,7 @@ namespace Rehawk.UIFramework
 
         public void RegisterCommandHandler(string commandName, Action callback)
         {
-            void CapsuledCallback(Control control)
+            void CapsuledCallback(ControlBase control)
             {
                 callback?.Invoke();
             }
@@ -244,7 +244,7 @@ namespace Rehawk.UIFramework
         #endregion
     }
     
-    public abstract class ContextControl : Control
+    public abstract class ContextControl : ControlBase
     {
         public abstract event EventHandler BeforeContextChanged;
         public abstract event EventHandler AfterContextChanged;
@@ -255,7 +255,7 @@ namespace Rehawk.UIFramework
         public abstract void SetContext(object context);
         public abstract void ResetContext();
         public abstract object GetContext();
-        public abstract void CopyContext(Control control);
+        public abstract void CopyContext(ControlBase control);
     }
 
     public abstract class Control<TContext> : ContextControl
@@ -299,15 +299,15 @@ namespace Rehawk.UIFramework
         {
             get { return staticContext; }
         }
-        
-        protected override void Start()
+
+        protected override void Awake()
         {
+            base.Awake();
+            
             if (useStaticContext)
             {
                 SetContextWithoutDirty(staticContext);
             }
-            
-            base.Start();
         }
 
         protected override void OnDestroy()
@@ -323,7 +323,7 @@ namespace Rehawk.UIFramework
             SetDirty();
         }
 
-        public override void CopyContext(Control control)
+        public override void CopyContext(ControlBase control)
         {
             if (control is Control<TContext> contextControl)
             {

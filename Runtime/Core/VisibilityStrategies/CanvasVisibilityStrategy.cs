@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Rehawk.UIFramework
 {
     [Serializable]
-    public class CanvasVisibilityStrategy : VisibilityStrategy
+    public class CanvasVisibilityStrategy : VisibilityStrategyBase
     {
         [SerializeField] private Canvas canvas;
 
