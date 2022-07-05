@@ -4,7 +4,7 @@ using Sirenix.Serialization;
 
 namespace Rehawk.UIFramework
 {
-    public class GenericControl : Control<object>
+    public class GenericControl : ContextControlBase<object>
     {
         [PropertyOrder(-101)]
         [BoxGroup("ContextBox", false)]

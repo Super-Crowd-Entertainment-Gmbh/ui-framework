@@ -3,7 +3,7 @@
 namespace Rehawk.UIFramework
 {
     [DisallowMultipleComponent]
-    public class ListIndexControl : Control<int>
+    public class ListIndexControl : ContextControlBase<int>
     {
         public int Index
         {

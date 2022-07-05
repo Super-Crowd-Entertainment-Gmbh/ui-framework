@@ -5,7 +5,7 @@ namespace Rehawk.UIFramework
 {
     public class ContextBindingAdapter : SingleBindingAdapterBase
     {
-        [SerializeField] private ContextControl control;
+        [SerializeField] private ContextControlBase control;
 
         protected override void OnRefresh()
         {

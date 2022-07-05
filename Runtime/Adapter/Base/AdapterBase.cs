@@ -201,7 +201,7 @@ namespace Rehawk.UIFramework
     }
 
     public abstract class ControlAdapter<TControl, TContext> : ControlAdapter<TControl>
-        where TControl : Control<TContext>
+        where TControl : ContextControlBase<TContext>
     {
         public bool HasContext
         {
@@ -249,7 +249,7 @@ namespace Rehawk.UIFramework
         }
     }
     
-    public abstract class ContextAdapter<TContext> : ControlAdapter<ContextControl>
+    public abstract class ContextAdapter<TContext> : ControlAdapter<ContextControlBase>
     {
         public bool HasContext
         {

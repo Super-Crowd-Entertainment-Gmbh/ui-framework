@@ -101,7 +101,7 @@ namespace Rehawk.UIFramework
                 controlType = control.GetType();
             }
 
-            if (serializedObject is ContextControl contextControl)
+            if (serializedObject is ContextControlBase contextControl)
             {
                 contextType = contextControl.ContextType;
             }

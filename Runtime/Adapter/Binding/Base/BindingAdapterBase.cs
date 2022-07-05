@@ -16,7 +16,7 @@ namespace Rehawk.UIFramework
                 {
                     path = path.Substring(8);
                 }
-                else if (source is ContextControl contextControl)
+                else if (source is ContextControlBase contextControl)
                 {
                     source = contextControl.GetContext();
                 }

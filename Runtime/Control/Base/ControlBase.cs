@@ -244,7 +244,7 @@ namespace Rehawk.UIFramework
         #endregion
     }
     
-    public abstract class ContextControl : ControlBase
+    public abstract class ContextControlBase : ControlBase
     {
         public abstract event EventHandler BeforeContextChanged;
         public abstract event EventHandler AfterContextChanged;
@@ -258,7 +258,7 @@ namespace Rehawk.UIFramework
         public abstract void CopyContext(ControlBase control);
     }
 
-    public abstract class Control<TContext> : ContextControl
+    public abstract class ContextControlBase<TContext> : ContextControlBase
     {
         [PropertyOrder(-100)]
         [BoxGroup("ContextBox", false)]
@@ -325,7 +325,7 @@ namespace Rehawk.UIFramework
 
         public override void CopyContext(ControlBase control)
         {
-            if (control is Control<TContext> contextControl)
+            if (control is ContextControlBase<TContext> contextControl)
             {
                 SetContext(contextControl.Context);
             }
