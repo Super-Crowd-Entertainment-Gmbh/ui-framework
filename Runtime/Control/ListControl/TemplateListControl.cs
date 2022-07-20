@@ -83,6 +83,12 @@ namespace Rehawk.UIFramework
             {
                 activeItems[i].SetActive(false);
                 inactiveItems.Enqueue(activeItems[i]);
+                
+                IListPoolReturnHandler[] poolReturnHandlers = activeItems[i].GetComponentsInChildren<IListPoolReturnHandler>();
+                for (int j = 0; j < poolReturnHandlers.Length; j++)
+                {
+                    poolReturnHandlers[j].Returned();
+                }
             }
             
             activeItems.Clear();
@@ -101,6 +107,7 @@ namespace Rehawk.UIFramework
                     itemObj = inactiveItems.Dequeue();
                     
                     itemObj.gameObject.SetActive(true);
+
                     activeItems.Add(itemObj);
                 }
                 else

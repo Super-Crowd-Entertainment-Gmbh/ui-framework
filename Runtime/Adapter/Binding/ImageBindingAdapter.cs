@@ -32,6 +32,9 @@ namespace Rehawk.UIFramework
                 case Mode.Color:
                     HandleColor();
                     break;
+                case Mode.FillAmount:
+                    HandleFillAmount();
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -59,6 +62,11 @@ namespace Rehawk.UIFramework
             }
         }
 
+        private void HandleFillAmount()
+        {
+            image.fillAmount = GetValue<float>(Binding);
+        }
+
         private void SetSprite(Sprite sprite)
         {
             switch (mode)
@@ -78,7 +86,8 @@ namespace Rehawk.UIFramework
         {
             Sprite,
             OverrideSprite,
-            Color
+            Color,
+            FillAmount
         }
     }
 }

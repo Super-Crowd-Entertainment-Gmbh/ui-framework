@@ -4,7 +4,7 @@ using UnityEngine.Events;
 
 namespace Rehawk.UIFramework
 {
-    public class UnityEventBindingAdapter : SingleBindingAdapterBase
+    public class UnityEventBindingAdapter : SingleBindingAdapterBase, IListPoolReturnHandler
     {
         [SerializeField] private UnityEvent onGotValue;
         [SerializeField] private UnityEvent onLostValue;
@@ -13,7 +13,7 @@ namespace Rehawk.UIFramework
         private bool contextChangedBefore;
         private bool hadValue;
         private object previousValue;
-        
+
         protected override void OnRefresh()
         {
             base.OnRefresh();
@@ -46,6 +46,11 @@ namespace Rehawk.UIFramework
 
             contextChangedBefore = true;
             previousValue = value;
+        }
+
+        void IListPoolReturnHandler.Returned()
+        {
+            contextChangedBefore = false;
         }
     }
 }

@@ -83,6 +83,12 @@ namespace Rehawk.UIFramework
             for (int i = 0; i < items.Length; i++)
             {
                 items[i].SetActive(keepEmptyActive);
+                
+                IListPoolReturnHandler[] poolReturnHandlers = items[i].GetComponentsInChildren<IListPoolReturnHandler>();
+                for (int j = 0; j < poolReturnHandlers.Length; j++)
+                {
+                    poolReturnHandlers[j].Returned();
+                }
             }
         }
 

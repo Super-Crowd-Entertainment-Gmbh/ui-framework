@@ -6,7 +6,7 @@ using UnityEngine.Events;
 
 namespace Rehawk.UIFramework
 {
-    public class ValidationBindingAdapter : SingleBindingAdapterBase
+    public class ValidationBindingAdapter : SingleBindingAdapterBase, IListPoolReturnHandler
     {
         [LabelText("Operator")]
         [SerializeField] private Operator @operator;
@@ -15,9 +15,9 @@ namespace Rehawk.UIFramework
         [SerializeField] private UnityEvent onValid;
         [SerializeField] private UnityEvent onInvalid;
 
-        private bool wasSetBefore = false;
+        private bool wasSetBefore;
         private bool wasValid;
-        
+
         protected override void OnRefresh()
         {
             base.OnRefresh();
@@ -143,9 +143,14 @@ namespace Rehawk.UIFramework
                     onInvalid.Invoke();
                 }
             }
-
+            
             wasValid = isValid;
             wasSetBefore = true;
+        }
+        
+        void IListPoolReturnHandler.Returned()
+        {
+            wasSetBefore = false;
         }
 
         [ContextMenu("Compare To Int")]

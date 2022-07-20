@@ -5,11 +5,13 @@ using UnityEngine;
 
 namespace Rehawk.UIFramework
 {
+    public delegate void ListControlCallback(int index, GameObject item, object data);
+
     public abstract class ListControlBase : ControlBase
     {
-        private Action<int, GameObject, object> onCreated;
-        private Action<int, GameObject, object> onActivated;
-        private Action<int, GameObject, object> onDeactivated;
+        private ListControlCallback onCreated;
+        private ListControlCallback onActivated;
+        private ListControlCallback onDeactivated;
 
         public abstract int Count { get; }
         public abstract IEnumerable<GameObject> Items { get; }
@@ -20,7 +22,7 @@ namespace Rehawk.UIFramework
         public abstract GameObject GetItem(int index);
         public abstract int GetIndex(GameObject item);
 
-        public void SetCallback(ListControlCallbacks target, Action<int, GameObject, object> callback)
+        public void SetCallback(ListControlCallbacks target, ListControlCallback callback)
         {
             switch (target)
             {
@@ -104,5 +106,10 @@ namespace Rehawk.UIFramework
                 indexControl.SetContext(index);
             }
         }
+    }
+
+    public interface IListPoolReturnHandler
+    {
+        void Returned();
     }
 }
