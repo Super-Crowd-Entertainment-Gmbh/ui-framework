@@ -71,7 +71,7 @@ namespace Rehawk.UIFramework.Utilities
 
                         string parameterValue = string.Empty;
                         
-                        MethodInfo methodInfo;
+                        MethodInfo methodInfo = null;
                         
                         if (braceStart > 0)
                         {
@@ -98,12 +98,13 @@ namespace Rehawk.UIFramework.Utilities
                                     return parameters[0].ParameterType == typeof(string);
                                 });
                         }
-                        else
+                        
+                        if (methodInfo == null)
                         {
                             methodInfo = currentType.GetMethods(BindingFlags.Instance | BindingFlags.Public)
                                 .FirstOrDefault(m => m.Name == memberName && m.GetParameters().Length == 0);
                         }
-
+                        
                         if (methodInfo != null)
                         {
                             if (string.IsNullOrEmpty(parameterValue))

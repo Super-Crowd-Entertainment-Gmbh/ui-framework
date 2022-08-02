@@ -83,7 +83,7 @@ namespace Rehawk.UIFramework
         {
             for (int i = 0; i < items.Count; i++)
             {
-                InvokeCallback(ListControlCallbacks.Deactivated, i, items[i], itemData[i]);
+                InvokeCallback(ListControlCallbacks.Deactivated, i, items[i], null);
                 Destroy(items[i]);
             }
             items.Clear();
