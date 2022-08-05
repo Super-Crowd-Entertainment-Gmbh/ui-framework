@@ -21,6 +21,7 @@ namespace Rehawk.UIFramework
         private Type previousControlType;
 
         private bool hasError;
+        private string errorText;
         
         protected override void Initialize()
         {
@@ -39,10 +40,15 @@ namespace Rehawk.UIFramework
             
             Evaluate();
             
+            if (hasError && !string.IsNullOrEmpty(errorText))
+            {
+                EditorGUILayout.HelpBox(errorText, MessageType.Error);
+            }
+
             EditorGUILayout.BeginHorizontal();
             {
                 string path = this.ValueEntry.SmartValue;
-                
+
                 EditorGUI.BeginChangeCheck();
                 {
                     EditorGUILayout.PrefixLabel(label);
@@ -139,16 +145,15 @@ namespace Rehawk.UIFramework
         }
 
         private void Validate()
-        {
+        { 
+            hasError = false;
+            errorText = string.Empty;
+            
             string path = this.ValueEntry.SmartValue;
 
             if (!string.IsNullOrEmpty(path) && !path.Contains("("))
             {
                 hasError = pointers.Count(p => p.Path == path) == 0;
-            }
-            else
-            {
-                hasError = false;
             }
         }
     }

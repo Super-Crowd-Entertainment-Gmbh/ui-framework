@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Rehawk.UIFramework.Utilities;
 using Sirenix.OdinInspector.Editor;
 using Sirenix.Utilities.Editor;
 using UnityEditor;
@@ -14,11 +13,15 @@ namespace Rehawk.UIFramework
         private ControlBase[] controls;
         private string[] options;
 
+        private bool hasError;
+        private string errorText;
+
         protected override void Initialize()
         {
             base.Initialize();
 
             Evaluate();
+            Validate();
         }
 
         protected override void DrawPropertyLayout(GUIContent label)
@@ -30,16 +33,30 @@ namespace Rehawk.UIFramework
             
             Evaluate();
             
+            if (hasError && !string.IsNullOrEmpty(errorText))
+            {
+                EditorGUILayout.HelpBox(errorText, MessageType.Error);
+            }
+
             EditorGUILayout.BeginHorizontal();
             {
                 ControlBase control = this.ValueEntry.SmartValue;
-                
+
                 EditorGUI.BeginChangeCheck();
                 {
                     EditorGUILayout.PrefixLabel(label);
                     
+                    Color previousColor = GUI.color;
+
+                    if (hasError)
+                    {
+                        GUI.color = Color.red;
+                    }
+
                     control = (ControlBase) EditorGUILayout.ObjectField(GUIContent.none, control, typeof(ControlBase), true);
                     
+                    GUI.color = previousColor;
+
                     if (controls.Length > 0)
                     {
                         int newControlIndex = 0;
@@ -62,6 +79,7 @@ namespace Rehawk.UIFramework
                 if (EditorGUI.EndChangeCheck())
                 {
                     this.ValueEntry.WeakSmartValue = control;
+                    Validate();
                 }
             }
             EditorGUILayout.EndHorizontal();
@@ -116,6 +134,47 @@ namespace Rehawk.UIFramework
             {
                 controls = new ControlBase[0];
                 options = new string[0];
+            }
+        }
+
+        private void Validate()
+        {
+            hasError = false;
+            errorText = string.Empty;
+            
+            var controlAttribute = this.Property.GetAttribute<ControlAttribute>();
+            ControlBase control = this.ValueEntry.SmartValue;
+
+            if (controlAttribute != null && control != null)
+            {
+                if (control is ContextControlBase contextControl)
+                {
+                    hasError = controlAttribute.disallowContext;
+
+                    if (hasError)
+                    {
+                        errorText = "No context controls allowed.";
+                        return;
+                    }
+                    
+                    hasError = !controlAttribute.contextTypes.Contains(contextControl.ContextType);
+
+                    if (hasError)
+                    {
+                        errorText = "Wrong context type.";
+                        return;
+                    }
+                }
+                else
+                {
+                    hasError = controlAttribute.contextTypes.Length > 0;
+                    
+                    if (hasError)
+                    {
+                        errorText = "No non context controls allowed.";
+                        return;
+                    }
+                }
             }
         }
     }
