@@ -53,7 +53,7 @@ namespace Rehawk.UIFramework
                         GUI.color = Color.red;
                     }
 
-                    control = (ControlBase) EditorGUILayout.ObjectField(GUIContent.none, control, typeof(ControlBase), true);
+                    control = (ControlBase) EditorGUILayout.ObjectField(GUIContent.none, control, this.ValueEntry.TypeOfValue, true);
                     
                     GUI.color = previousColor;
 

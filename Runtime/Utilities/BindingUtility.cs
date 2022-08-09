@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -314,12 +315,16 @@ namespace Rehawk.UIFramework.Utilities
         {
             object value = instance;
 
+            bool gotValue = false;
+            
             foreach (Type type in value.GetType().GetInterfaces())
             {
                 if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IDictionary<,>))
                 {
                     MethodInfo methodInfo = typeof(BindingUtility).GetMethod(nameof(GetDictionaryElement), BindingFlags.Static | BindingFlags.NonPublic);
                     value = methodInfo.MakeGenericMethod(type.GetGenericArguments()).Invoke(null, new[] { value, indexer });
+
+                    gotValue = true;
                     
                     break;
                 }
@@ -329,16 +334,32 @@ namespace Rehawk.UIFramework.Utilities
                     MethodInfo methodInfo = typeof(BindingUtility).GetMethod(nameof(GetListElement), BindingFlags.Static | BindingFlags.NonPublic);
                     value = methodInfo.MakeGenericMethod(type.GetGenericArguments()).Invoke(null, new[] { value, indexer });
                     
+                    gotValue = true;
+
                     break;
                 }
             }
 
+            if (!gotValue)
+            {    
+                if (value is IDictionary dictionary)
+                {
+                    value = dictionary[indexer];
+                    gotValue = true;
+                }
+            }
+            
             return value;
         }
         
         private static TValue GetDictionaryElement<TKey, TValue>(IDictionary<TKey, TValue> dict, object index)
         {
             TKey key = (TKey)Convert.ChangeType(index, typeof(TKey), null);
+            return dict[key];
+        }
+
+        private static object GetDictionaryElement(IDictionary dict, object key)
+        {
             return dict[key];
         }
 

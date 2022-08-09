@@ -151,7 +151,7 @@ namespace Rehawk.UIFramework
             
             string path = this.ValueEntry.SmartValue;
 
-            if (!string.IsNullOrEmpty(path) && !path.Contains("("))
+            if (!string.IsNullOrEmpty(path) && !path.Contains("(") && !path.Contains("["))
             {
                 hasError = pointers.Count(p => p.Path == path) == 0;
             }

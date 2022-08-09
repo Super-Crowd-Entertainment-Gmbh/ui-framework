@@ -6,6 +6,7 @@ using UnityEngine;
 namespace Rehawk.UIFramework
 {
     public delegate void ListControlCallback(int index, GameObject item, object data);
+    public delegate void ListControlCallback<T>(int index, GameObject item, T data);
 
     public abstract class ListControlBase : ControlBase
     {
@@ -50,6 +51,21 @@ namespace Rehawk.UIFramework
                 default:
                     throw new ArgumentOutOfRangeException(nameof(target), target, null);
             }
+        }
+        
+        public void SetCallback<T>(ListControlCallbacks target, ListControlCallback<T> callback)
+        {
+            SetCallback(target, (index, item, boxedData) =>
+            {
+                T data = default;
+
+                if (boxedData != null)
+                {
+                    data = (T) boxedData;
+                }
+                
+                callback.Invoke(index, item, data);
+            });
         }
         
         public void ClearCallback(ListControlCallbacks target)
