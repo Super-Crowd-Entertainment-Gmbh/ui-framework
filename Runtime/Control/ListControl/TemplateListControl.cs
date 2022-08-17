@@ -12,20 +12,20 @@ namespace Rehawk.UIFramework
         [SerializeField] private RectTransform itemRoot;
         [OdinSerialize] private GameObject itemTemplate;
 
-        private int capacity;
+        private int count;
         private object[] itemData;
         
-        private readonly List<GameObject> activeItems = new List<GameObject>();
+        private readonly List<GameObject> items = new List<GameObject>();
         private readonly Queue<GameObject> inactiveItems = new Queue<GameObject>();
         
         public override int Count
         {
-            get { return activeItems.Count; }
+            get { return count; }
         }
         
         public override IEnumerable<GameObject> Items
         {
-            get { return activeItems; }    
+            get { return items; }    
         }
 
         protected override void Awake()
@@ -37,7 +37,7 @@ namespace Rehawk.UIFramework
 
         public override void SetCount(int count)
         {
-            this.capacity = count;
+            this.count = count;
             itemData = new object[count];
             
             RefreshItems();
@@ -47,7 +47,7 @@ namespace Rehawk.UIFramework
         public override void SetCountByData(IEnumerable itemData)
         {
             this.itemData = itemData.Cast<object>().ToArray();
-            this.capacity = this.itemData.Length;
+            this.count = this.itemData.Length;
             
             RefreshItems();
             SetDirty();
@@ -56,7 +56,7 @@ namespace Rehawk.UIFramework
         public override void Clear()
         {
             this.itemData = Array.Empty<object>();
-            this.capacity = 0;
+            this.count = 0;
             
             ClearItems();
             SetDirty();
@@ -64,9 +64,9 @@ namespace Rehawk.UIFramework
 
         public override GameObject GetItem(int index)
         {
-            if (index >= 0 && index < activeItems.Count)
+            if (index >= 0 && index < items.Count)
             {
-                return activeItems[index];
+                return items[index];
             }
 
             return null;
@@ -74,55 +74,52 @@ namespace Rehawk.UIFramework
 
         public override int GetIndex(GameObject item)
         {
-            return activeItems.IndexOf(item);
+            return items.IndexOf(item);
         }
 
         private void ClearItems()
         {
-            for (int i = 0; i < activeItems.Count; i++)
+            inactiveItems.Clear();
+            
+            for (int i = 0; i < items.Count; i++)
             {
-                activeItems[i].SetActive(false);
-                inactiveItems.Enqueue(activeItems[i]);
+                items[i].SetActive(false);
+                inactiveItems.Enqueue(items[i]);
                 
-                IListPoolReturnHandler[] poolReturnHandlers = activeItems[i].GetComponentsInChildren<IListPoolReturnHandler>();
+                IListPoolReturnHandler[] poolReturnHandlers = items[i].GetComponentsInChildren<IListPoolReturnHandler>();
                 for (int j = 0; j < poolReturnHandlers.Length; j++)
                 {
                     poolReturnHandlers[j].Returned();
                 }
             }
-            
-            activeItems.Clear();
         }
 
         private void RefreshItems()
         {
             ClearItems();
 
-            for (int i = 0; i < capacity; i++)
+            for (int i = 0; i < count; i++)
             {
                 GameObject itemObj;
                 
                 if (inactiveItems.Count > 0)
                 {
                     itemObj = inactiveItems.Dequeue();
-                    
                     itemObj.gameObject.SetActive(true);
-
-                    activeItems.Add(itemObj);
                 }
                 else
                 {
                     itemObj = Instantiate(itemTemplate, itemRoot);
-                    
                     itemObj.gameObject.SetActive(true);
-                    activeItems.Add(itemObj);
                     
-                    InvokeCallback(ListControlCallbacks.Created, i, activeItems[i], null);
+                    items.Add(itemObj);
+                    
+                    InvokeCallback(ListControlCallbacks.Created, i, items[i], null);
                 }
                 
-                InformIndexReceiver(i, activeItems[i]);
+                InformIndexReceiver(i, items[i]);
                 
-                InvokeCallback(ListControlCallbacks.Activated, i, activeItems[i], itemData[i]);
+                InvokeCallback(ListControlCallbacks.Activated, i, items[i], itemData[i]);
             }
         }
     }

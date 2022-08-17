@@ -325,13 +325,13 @@ namespace Rehawk.UIFramework
 
         public override void CopyContext(ControlBase control)
         {
-            if (control is ContextControlBase<TContext> contextControl)
+            if (control is ContextControlBase contextControl)
             {
-                SetContext(contextControl.Context);
+                SetContext(contextControl.GetContext());
             }
             else
             {
-                Debug.LogError($"Given control '{control.GetType().Name}' has not the same context type as '{GetType().Name}.", gameObject);
+                Debug.LogError($"Source control '{control.GetType().Name}' is not a context control like the target control '{GetType().Name}.", gameObject);
             }
         }
 
