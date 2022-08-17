@@ -310,13 +310,6 @@ namespace Rehawk.UIFramework
             }
         }
 
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-            
-            ResetContext();
-        }
-
         public void SetContext(TContext context)
         {
             SetContextWithoutDirty(context);
