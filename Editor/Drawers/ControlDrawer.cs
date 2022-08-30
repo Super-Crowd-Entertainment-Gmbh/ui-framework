@@ -156,9 +156,21 @@ namespace Rehawk.UIFramework
                         errorText = "No context controls allowed.";
                         return;
                     }
-                    
-                    hasError = !controlAttribute.contextTypes.Contains(contextControl.ContextType);
 
+                    if (controlAttribute.contextTypes.Length > 0)
+                    {
+                        hasError = true;
+                        
+                        for (int i = 0; i < controlAttribute.contextTypes.Length; i++)
+                        {
+                            if (controlAttribute.contextTypes[i].IsAssignableFrom(contextControl.ContextType))
+                            {
+                                hasError = false;
+                                break;
+                            }
+                        }
+                    }
+                    
                     if (hasError)
                     {
                         errorText = "Wrong context type.";
