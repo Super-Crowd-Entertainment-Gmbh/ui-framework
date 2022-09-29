@@ -11,6 +11,8 @@ namespace Rehawk.UIFramework
         [LabelText("Operator")]
         [SerializeField] private Operator @operator;
         [OdinSerialize] private object comparedTo;
+        [ShowIf("@this.comparedTo is ContextControlBase")]
+        [OdinSerialize] private bool compareToContext;
         
         [SerializeField] private UnityEvent onValid;
         [SerializeField] private UnityEvent onInvalid;
@@ -30,6 +32,13 @@ namespace Rehawk.UIFramework
             if (value != null && value.Equals(null))
             {
                 value = null;
+            }
+            
+            object comparedTo = this.comparedTo;
+
+            if (comparedTo is ContextControlBase compareControl && compareToContext)
+            {
+                comparedTo = compareControl.GetContext();
             }
             
             switch (@operator)
