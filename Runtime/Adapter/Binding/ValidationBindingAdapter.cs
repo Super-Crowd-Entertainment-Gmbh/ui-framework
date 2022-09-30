@@ -10,8 +10,9 @@ namespace Rehawk.UIFramework
     {
         [LabelText("Operator")]
         [SerializeField] private Operator @operator;
+        [DisableInPlayMode]
         [OdinSerialize] private object comparedTo;
-        [ShowIf("@this.comparedTo is ContextControlBase")]
+        [ShowIf("@this.comparedTo is ContextControlBase"), DisableInPlayMode]
         [OdinSerialize] private bool compareToContext;
         
         [SerializeField] private UnityEvent onValid;
@@ -19,6 +20,16 @@ namespace Rehawk.UIFramework
 
         private bool wasSetBefore;
         private bool wasValid;
+
+        protected override void Start()
+        {
+            base.Start();
+            
+            if (comparedTo is ContextControlBase compareControl && compareToContext)
+            {
+                compareControl.AfterContextChanged += OnAfterCompareControlContextChanged;
+            }
+        }
 
         protected override void OnRefresh()
         {
@@ -157,6 +168,11 @@ namespace Rehawk.UIFramework
             wasSetBefore = true;
         }
         
+        private void OnAfterCompareControlContextChanged(object sender, EventArgs e)
+        {
+            SetDirty();
+        }
+
         void IListPoolReturnHandler.Returned()
         {
             wasSetBefore = false;
