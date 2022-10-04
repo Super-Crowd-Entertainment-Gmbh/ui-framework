@@ -1,23 +1,38 @@
-﻿using Rehawk.UIFramework.Utilities;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace Rehawk.UIFramework
 {
     public class RawImageBindingAdapter : SingleBindingAdapterBase
     {
-        [SerializeField] private RawImage image;
+        [SerializeField] 
+        private RawImage[] images;
+        
+        [SerializeField, HideInInspector] 
+        private RawImage image;
 
         protected override void OnRefresh()
         {
             base.OnRefresh();
             
-            image.texture = null;
-
             var value = GetValue<Texture>(Binding);
-            if (!ObjectUtility.IsNull(value))
+            
+            for (int i = 0; i < images.Length; i++)
             {
-                image.texture = value;
+                images[i].texture = value;
+            }  
+        }
+        
+        protected override void OnValidate()
+        {
+            base.OnValidate();
+
+            if (images == null || images.Length <= 0)
+            {
+                images = new[]
+                {
+                    image
+                };
             }
         }
     }

@@ -7,16 +7,25 @@ namespace Rehawk.UIFramework
 {
     public class ImageBindingAdapter : SingleBindingAdapterBase
     {
-        [SerializeField] private Image image;
-        [SerializeField] private Mode mode;
+        [SerializeField] 
+        private Image[] images;
+        [SerializeField] 
+        private Mode mode;
 
-        private Color defaultImageColor;
+        [SerializeField, HideInInspector] 
+        private Image image;
+
+        private Color[] defaultImageColor;
 
         protected override void Awake()
         {
             base.Awake();
 
-            defaultImageColor = image.color;
+            defaultImageColor = new Color[images.Length];
+            for (int i = 0; i < images.Length; i++)
+            {
+                defaultImageColor[i] = images[i].color;
+            }
         }
 
         protected override void OnRefresh()
@@ -53,18 +62,42 @@ namespace Rehawk.UIFramework
 
         private void HandleColor()
         {
-            image.color = defaultImageColor;
-            
             var value = GetValue<Color>(Binding);
-            if (!ObjectUtility.IsNull(value))
+
+            if (ObjectUtility.IsNull(value))
             {
-                image.color = value;
+                for (int i = 0; i < images.Length; i++)
+                {
+                    images[i].color = defaultImageColor[i];
+                }  
+            }
+            else
+            {  
+                for (int i = 0; i < images.Length; i++)
+                {
+                    images[i].color = value;
+                }  
             }
         }
 
         private void HandleFillAmount()
         {
-            image.fillAmount = GetValue<float>(Binding);
+            var value = GetValue<float>(Binding);
+            
+            if (ObjectUtility.IsNull(value))
+            {
+                for (int i = 0; i < images.Length; i++)
+                {
+                    images[i].fillAmount = 0;
+                }  
+            }
+            else
+            {  
+                for (int i = 0; i < images.Length; i++)
+                {
+                    images[i].fillAmount = value;
+                }  
+            }
         }
 
         private void SetSprite(Sprite sprite)
@@ -72,13 +105,32 @@ namespace Rehawk.UIFramework
             switch (mode)
             {
                 case Mode.Sprite:
-                    image.sprite = sprite;
+                    for (int i = 0; i < images.Length; i++)
+                    {
+                        images[i].sprite = sprite;
+                    }  
                     break;
                 case Mode.OverrideSprite:
-                    image.overrideSprite = sprite;
+                    for (int i = 0; i < images.Length; i++)
+                    {
+                        images[i].overrideSprite = sprite;
+                    } 
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        protected override void OnValidate()
+        {
+            base.OnValidate();
+
+            if (images == null || images.Length <= 0)
+            {
+                images = new[]
+                {
+                    image
+                };
             }
         }
 
