@@ -42,8 +42,8 @@ namespace Rehawk.UIFramework
         
         [Space]
         
-        [SerializeField] public UnityEvent becameVisible;
-        [SerializeField] public UnityEvent becameInvisible;
+        [SerializeField] private UnityEvent becameVisible;
+        [SerializeField] private UnityEvent becameInvisible;
 
         private bool isInitialized;
         

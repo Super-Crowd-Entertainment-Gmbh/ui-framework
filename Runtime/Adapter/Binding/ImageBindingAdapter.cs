@@ -121,6 +121,7 @@ namespace Rehawk.UIFramework
             }
         }
 
+#if UNITY_EDITOR
         protected override void OnValidate()
         {
             base.OnValidate();
@@ -133,7 +134,8 @@ namespace Rehawk.UIFramework
                 };
             }
         }
-
+#endif
+        
         private enum Mode
         {
             Sprite,
