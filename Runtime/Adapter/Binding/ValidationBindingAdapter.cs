@@ -31,6 +31,16 @@ namespace Rehawk.UIFramework
             }
         }
 
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            
+            if (comparedTo is ContextControlBase compareControl && compareToContext)
+            {
+                compareControl.AfterContextChanged -= OnAfterCompareControlContextChanged;
+            }
+        }
+
         protected override void OnRefresh()
         {
             base.OnRefresh();
