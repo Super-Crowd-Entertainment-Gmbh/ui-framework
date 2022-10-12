@@ -44,6 +44,9 @@ namespace Rehawk.UIFramework
                 case Mode.FillAmount:
                     HandleFillAmount();
                     break;
+                case Mode.Material:
+                    HandleMaterial();
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -100,6 +103,26 @@ namespace Rehawk.UIFramework
             }
         }
 
+        private void HandleMaterial()
+        {
+            var value = GetValue<Material>(Binding);
+            
+            if (ObjectUtility.IsNull(value))
+            {
+                for (int i = 0; i < images.Length; i++)
+                {
+                    images[i].material = null;
+                }  
+            }
+            else
+            {  
+                for (int i = 0; i < images.Length; i++)
+                {
+                    images[i].material = value;
+                }  
+            }
+        }
+
         private void SetSprite(Sprite sprite)
         {
             switch (mode)
@@ -141,7 +164,8 @@ namespace Rehawk.UIFramework
             Sprite,
             OverrideSprite,
             Color,
-            FillAmount
+            FillAmount,
+            Material
         }
     }
 }
