@@ -61,7 +61,30 @@ namespace Rehawk.UIFramework
             {
                 comparedTo = compareControl.GetContext();
             }
-            
+
+            if (comparedTo is string)
+            {
+                if (value != null)
+                {
+                    value = value.ToString();
+                }
+                else
+                {
+                    value = string.Empty;
+                }
+            }
+            else if (value is string)
+            {
+                if (comparedTo != null)
+                {
+                    comparedTo = value.ToString();
+                }
+                else
+                {
+                    comparedTo = string.Empty;
+                }
+            }
+
             switch (@operator)
             {
                 case Operator.Equals:
