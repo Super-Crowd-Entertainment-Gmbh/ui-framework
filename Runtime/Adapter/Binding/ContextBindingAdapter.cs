@@ -5,7 +5,11 @@ namespace Rehawk.UIFramework
 {
     public class ContextBindingAdapter : SingleBindingAdapterBase
     {
-        [SerializeField] private ContextControlBase control;
+        [SerializeField] 
+        private ContextControlBase[] controls;
+        
+        [SerializeField, HideInInspector] 
+        private ContextControlBase control;
 
         protected override void OnRefresh()
         {
@@ -15,12 +19,33 @@ namespace Rehawk.UIFramework
 
             if (!ObjectUtility.IsNull(value))
             {
-                control.SetContext(value);
+                foreach (ContextControlBase control in controls)
+                {
+                    control.SetContext(value);
+                }
             }
             else
             {
-                control.ResetContext();
+                foreach (ContextControlBase control in controls)
+                {
+                    control.ResetContext();
+                }
             }
         }
+        
+#if UNITY_EDITOR
+        protected override void OnValidate()
+        {
+            base.OnValidate();
+
+            if (controls == null || controls.Length <= 0)
+            {
+                controls = new[]
+                {
+                    control
+                };
+            }
+        }
+#endif
     }
 }
