@@ -4,12 +4,12 @@ using UnityEngine;
 namespace Rehawk.UIFramework
 {
     [RequireComponent(typeof(TextMeshProUGUI))]
-    public class UILabel : UIControlBase
+    public class UILabel : UILabelBase
     {
         [SerializeField]
         private TextMeshProUGUI target;
         
-        public string Text
+        public override string Text
         {
             get { return target.text; }
             set
@@ -22,7 +22,7 @@ namespace Rehawk.UIFramework
             }
         }
 
-        public Color Color
+        public override Color Color
         {
             get { return target.color; }
             set

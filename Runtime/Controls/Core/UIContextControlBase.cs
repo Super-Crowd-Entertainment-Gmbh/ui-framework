@@ -1,4 +1,4 @@
-using System.Collections.Specialized;
+using System;
 using System.ComponentModel;
 
 namespace Rehawk.UIFramework
@@ -9,6 +9,8 @@ namespace Rehawk.UIFramework
 
         private bool isInitialized;
         
+        public event EventHandler ContextChanged;
+
         public bool HasContext
         {
             get { return context != default; }
@@ -65,6 +67,13 @@ namespace Rehawk.UIFramework
             {
                 SetDirty();
             }
+            
+            ContextChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void ClearContext()
+        {
+            SetContext<object>(null);
         }
 
         private void LinkINotifyPropertyChanged()

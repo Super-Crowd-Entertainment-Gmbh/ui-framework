@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -12,12 +13,12 @@ namespace Rehawk.UIFramework
     /// </summary>
     public class ContextualPrefabUIListStrategy : IUIListItemStrategy
     {
-        private readonly RectTransform root;
+        private readonly GameObject root;
         private readonly GetPrefabFunctionDelegate getItemPrefab;
         
         private readonly List<GameObject> items = new List<GameObject>();
         
-        public ContextualPrefabUIListStrategy(RectTransform root, GetPrefabFunctionDelegate getItemPrefab)
+        public ContextualPrefabUIListStrategy(GameObject root, GetPrefabFunctionDelegate getItemPrefab)
         {
             this.root = root;
             this.getItemPrefab = getItemPrefab;
@@ -42,7 +43,7 @@ namespace Rehawk.UIFramework
         {
             GameObject itemPrefab = getItemPrefab.Invoke(index, data);
             
-            GameObject item = Object.Instantiate(itemPrefab, root);
+            GameObject item = Object.Instantiate(itemPrefab, root.transform);
             item.SetActive(true);
                     
             items.Add(item);
@@ -53,6 +54,13 @@ namespace Rehawk.UIFramework
         public void RemoveItem(int index)
         {
             Object.Destroy(items[index]);
+            items.RemoveAt(index);
+        }
+
+        [Serializable]
+        public class Dependencies
+        {
+            public GameObject itemRoot;
         }
     }
 }

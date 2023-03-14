@@ -13,7 +13,7 @@ namespace Rehawk.UIFramework
     public class UIList : UIContextControlBase
     {
         private IUIListItemStrategy itemStrategy;
-        private Type itemReceiver;
+        private Type itemReceiverType;
 
         private object[] datasets;
         
@@ -38,9 +38,9 @@ namespace Rehawk.UIFramework
             this.itemStrategy = itemStrategy;
         }
 
-        public void SetItemReceiver<T>() where T : IUIListItemReceiver
+        public void SetItemReceiverType<T>() where T : IUIListItemReceiver
         {
-            itemReceiver = typeof(T);
+            itemReceiverType = typeof(T);
         }
 
         public void SetItemCallback(UIListItemCallback type, UIListItemCallbackDelegate callback)
@@ -95,7 +95,7 @@ namespace Rehawk.UIFramework
         {
             if (datasets != null)
             {
-                for (int i = 0; i < datasets.Length; i++)
+                for (int i = datasets.Length - 1; i >= 0; i--)
                 {
                     GameObject item = itemStrategy.GetItem(i);
 
@@ -123,7 +123,14 @@ namespace Rehawk.UIFramework
 
                     if (item != null)
                     {
-                        if (this.itemReceiver != null && item.TryGetComponent(this.itemReceiver, out Component itemReceiverComponent) && itemReceiverComponent is IUIListItemReceiver itemReceiver)
+                        Type itemReceiverType = this.itemReceiverType;
+
+                        if (itemReceiverType == null)
+                        {
+                            itemReceiverType = typeof(IUIListItemReceiver);
+                        }
+                        
+                        if (item.TryGetComponent(itemReceiverType, out Component itemReceiverComponent) && itemReceiverComponent is IUIListItemReceiver itemReceiver)
                         {
                             itemReceiver.SetListItem(new ListItem(i, data));
                         }

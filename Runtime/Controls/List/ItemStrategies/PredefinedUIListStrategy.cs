@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Rehawk.UIFramework
@@ -91,6 +92,12 @@ namespace Rehawk.UIFramework
             items[index].SetActive(KeepEmptyActive);
             emptyItemsQueue.Enqueue(items[index]);
             emptyItems.Add(items[index]);
+        }
+
+        [Serializable]
+        public class Dependencies
+        {
+            public GameObject[] items;
         }
     }
 }

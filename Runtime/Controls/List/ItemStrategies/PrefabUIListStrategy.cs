@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -10,7 +11,7 @@ namespace Rehawk.UIFramework
     /// </summary>
     public class PrefabUIListStrategy : IUIListItemStrategy
     {
-        private readonly RectTransform root;
+        private readonly GameObject root;
         private readonly GameObject itemPrefab;
         private readonly GetPrefabFunctionDelegate getItemPrefab;
         
@@ -20,7 +21,7 @@ namespace Rehawk.UIFramework
 
         private bool keepEmptyActive;
 
-        public PrefabUIListStrategy(RectTransform root, GameObject itemPrefab)
+        public PrefabUIListStrategy(GameObject root, GameObject itemPrefab)
         {
             this.root = root;
             this.itemPrefab = itemPrefab;
@@ -78,7 +79,7 @@ namespace Rehawk.UIFramework
             }
             else
             {
-                GameObject item = Object.Instantiate(itemPrefab, root);
+                GameObject item = Object.Instantiate(itemPrefab, root.transform);
                 item.SetActive(true);
                     
                 items.Add(item);
@@ -94,6 +95,13 @@ namespace Rehawk.UIFramework
             items[index].SetActive(KeepEmptyActive);
             emptyItemsQueue.Enqueue(items[index]);
             emptyItems.Add(items[index]);
+        }
+
+        [Serializable]
+        public class Dependencies
+        {
+            public GameObject itemRoot;
+            public GameObject itemPrefab;
         }
     }
 }

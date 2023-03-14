@@ -25,7 +25,7 @@ namespace Rehawk.UIFramework
 
         public void Evaluate()
         {
-            UnLinkINotifyPropertyChanged();
+            UnLinkFromEvents();
             
             context = getContext?.Invoke();
             
@@ -36,14 +36,19 @@ namespace Rehawk.UIFramework
 
             value = Get();
 
-            LinkINotifyPropertyChanged();
+            LinkToEvents();
+        }
+        
+        public void Release()
+        {
+            UnLinkFromEvents();
         }
 
         public object Get()
         {
             object result = context;
             
-            if (context != null && propertyInfo != default)
+            if (context != null && propertyInfo != null)
             {
                 result = propertyInfo.GetValue(context, null);
             }
@@ -53,8 +58,14 @@ namespace Rehawk.UIFramework
 
         public void Set(object value)
         {
-            if (context != null && propertyInfo != default)
+            if (context != null && propertyInfo != null)
             {
+                // Built in converter for strings.
+                if (propertyInfo.PropertyType == typeof(string) && value != null)
+                {
+                    value = value.ToString();
+                }
+                
                 propertyInfo.SetValue(context, value);
             }
             else if (context is UIContextControlBase contextNode)
@@ -63,7 +74,7 @@ namespace Rehawk.UIFramework
             }
         }
         
-        private void LinkINotifyPropertyChanged()
+        private void LinkToEvents()
         {
             if (value is INotifyCollectionChanged valueNotifyCollectionChanged)
             {
@@ -84,7 +95,7 @@ namespace Rehawk.UIFramework
             }
         }
 
-        private void UnLinkINotifyPropertyChanged()
+        private void UnLinkFromEvents()
         {
             if (value is INotifyCollectionChanged valueNotifyCollectionChanged)
             {

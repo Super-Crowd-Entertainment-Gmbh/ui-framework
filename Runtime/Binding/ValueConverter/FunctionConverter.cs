@@ -1,6 +1,7 @@
 namespace Rehawk.UIFramework
 {
     public delegate object ValueConvertFunctionDelegate(object input);
+    public delegate object ValueConvertFunctionDelegate<in T>(T input);
     
     public class FunctionConverter : IValueConverter
     {

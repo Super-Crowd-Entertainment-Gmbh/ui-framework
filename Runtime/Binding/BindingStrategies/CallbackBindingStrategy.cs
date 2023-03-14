@@ -2,15 +2,15 @@
 
 namespace Rehawk.UIFramework
 {
-    public class CallbackBindingStrategy : IBindingStrategy
+    public class CallbackBindingStrategy<T> : IBindingStrategy
     {
-        private readonly Func<object> getCallback;
-        private readonly Action<object> setCallback;
+        private readonly Func<T> getCallback;
+        private readonly Action<T> setCallback;
         
         // Has no implementation for that.
         public event Action GotDirty;
 
-        public CallbackBindingStrategy(Func<object> getCallback, Action<object> setCallback)
+        public CallbackBindingStrategy(Func<T> getCallback, Action<T> setCallback)
         {
             this.getCallback = getCallback;
             this.setCallback = setCallback;
@@ -18,6 +18,8 @@ namespace Rehawk.UIFramework
 
         public void Evaluate() { }
 
+        public void Release() { }
+        
         public object Get()
         {
             return getCallback.Invoke();
@@ -25,7 +27,7 @@ namespace Rehawk.UIFramework
 
         public void Set(object value)
         {
-            setCallback.Invoke(value);
+            setCallback.Invoke((T) value);
         }
     }
 }

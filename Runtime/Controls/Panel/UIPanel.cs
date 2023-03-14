@@ -9,7 +9,7 @@ namespace Rehawk.UIFramework
     public class UIPanel : UIControlBase
     {
         [SerializeField] 
-        private bool hiddenByDefault;
+        private InitialVisibility visibility = InitialVisibility.None;
 
         [SerializeField] 
         private ParentConstraint parentConstraint = ParentConstraint.None;
@@ -64,11 +64,17 @@ namespace Rehawk.UIFramework
                 parentUIPanel.BecameInvisible += OnParentUIPanelBecameInvisible;    
             }
 
-            SetVisible(true);
-
+            if (visibility != InitialVisibility.None)
+            {
+                SetVisible(true);
+            }
+            
             isInitialized = true;
             
-            StartCoroutine(SetInitialVisibilityDelayed());
+            if (visibility != InitialVisibility.None)
+            {
+                StartCoroutine(SetInitialVisibilityDelayed());
+            }
 		}
 
         protected override void OnDestroy()
@@ -125,8 +131,8 @@ namespace Rehawk.UIFramework
         {
             yield return null;
             
-            // Do it after the start to enable the static context set of child controls.
-            SetVisible(!hiddenByDefault);
+            // Do it one frame after Start to enable child controls Start too. 
+            SetVisible(visibility == InitialVisibility.Visible);
         }
         
         private void OnParentUIPanelBecameVisible(object sender, UIPanel panel)
@@ -143,6 +149,13 @@ namespace Rehawk.UIFramework
             {
                 SetVisible(false);
             }
+        }
+
+        public enum InitialVisibility
+        {
+            None,
+            Visible,
+            Hidden
         }
 
         public enum ParentConstraint

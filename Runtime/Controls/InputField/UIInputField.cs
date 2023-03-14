@@ -4,15 +4,22 @@ using UnityEngine;
 namespace Rehawk.UIFramework
 {
     [RequireComponent(typeof(TMP_InputField))]
-    public class UIInputField : UIControlBase
+    public class UIInputField : UIInputFieldBase
     {
         [SerializeField]
         private TMP_InputField target;
         
-        public string Text
+        public override string Text
         {
             get { return target.text; }
-            set { target.text = value; }
+            set
+            {
+                if (target.text != value)
+                {
+                    target.text = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         protected override void Awake()

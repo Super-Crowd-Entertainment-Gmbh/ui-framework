@@ -4,12 +4,12 @@ using UnityEngine.UI;
 namespace Rehawk.UIFramework
 {
     [RequireComponent(typeof(Image))]
-    public class UIImage : UIControlBase
+    public class UIImage : UIImageBase
     {
         [SerializeField]
         private Image target;
 
-        public bool Enabled
+        public override bool Enabled
         {
             get { return target.enabled; }
             set
@@ -22,7 +22,7 @@ namespace Rehawk.UIFramework
             }
         }
         
-        public Sprite Sprite
+        public override Sprite Sprite
         {
             get { return target.sprite; }
             set
@@ -35,7 +35,7 @@ namespace Rehawk.UIFramework
             }
         }
 
-        public Color Color
+        public override Color Color
         {
             get { return target.color; }
             set
@@ -48,7 +48,7 @@ namespace Rehawk.UIFramework
             }
         }
 
-        public float FillAmount
+        public override float FillAmount
         {
             get { return target.fillAmount; }
             set

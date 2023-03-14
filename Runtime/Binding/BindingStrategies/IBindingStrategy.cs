@@ -7,6 +7,7 @@ namespace Rehawk.UIFramework
         event Action GotDirty;
 
         void Evaluate();
+        void Release();
         
         object Get();
         void Set(object value);
