@@ -22,12 +22,24 @@ namespace Rehawk.UIFramework
         
         public object Get()
         {
-            return getCallback.Invoke();
+            if (getCallback != null)
+            {
+                return getCallback.Invoke();
+            }
+
+            return null;
         }
 
         public void Set(object value)
         {
-            setCallback.Invoke((T) value);
+            if (value != null)
+            {
+                setCallback.Invoke((T) value);
+            }
+            else
+            {
+                setCallback.Invoke(default);
+            }
         }
     }
 }
