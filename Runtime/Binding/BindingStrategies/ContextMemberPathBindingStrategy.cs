@@ -97,12 +97,15 @@ namespace Rehawk.UIFramework
         {
             context = origin;
 
-            for (int i = 0; i < memberInfos.Length - 1; i++)
+            if (memberInfos != null)
             {
-                if (context != null)
+                for (int i = 0; i < memberInfos.Length - 1; i++)
                 {
-                    context = GetMemberInfoValueSimple(context, memberInfos[i]);
-                    memberValues[i] = context;
+                    if (context != null)
+                    {
+                        context = GetMemberInfoValueSimple(context, memberInfos[i]);
+                        memberValues[i] = context;
+                    }
                 }
             }
         }
@@ -122,7 +125,7 @@ namespace Rehawk.UIFramework
         {
             object result = null;
 
-            if (context != null)
+            if (context != null && memberInfos != null)
             {
                 MemberInfo memberInfo = memberInfos[^1];
                     
@@ -141,7 +144,7 @@ namespace Rehawk.UIFramework
 
         public void Set(object value)
         {
-            if (context != null)
+            if (context != null && memberInfos != null)
             {
                 MemberInfo memberInfo = memberInfos[^1];
 
@@ -250,7 +253,7 @@ namespace Rehawk.UIFramework
 
         private void OnOriginPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (memberInfos[0].Name == e.PropertyName)
+            if (memberInfos != null && memberInfos[0].Name == e.PropertyName)
             {
                 ReevaluateContext();
             }
@@ -258,11 +261,14 @@ namespace Rehawk.UIFramework
         
         private void OnMemberValuePropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            int memberIndex = Array.IndexOf(memberValues, sender);
-
-            if (memberInfos[memberIndex + 1].Name == e.PropertyName)
+            if (memberValues != null)
             {
-                ReevaluateContext();
+                int memberIndex = Array.IndexOf(memberValues, sender);
+
+                if (memberInfos[memberIndex + 1].Name == e.PropertyName)
+                {
+                    ReevaluateContext();
+                }
             }
         }
         
