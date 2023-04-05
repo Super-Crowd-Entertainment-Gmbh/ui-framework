@@ -94,6 +94,13 @@ namespace Rehawk.UIFramework
             return binding;
         }
 
+        public static Binding Inverted(this Binding binding)
+        {
+            binding.Converted(input => !((bool) input));
+            
+            return binding;
+        }
+
         public static Binding To<T>(this Binding binding, Expression<Func<T>> memberExpression) 
         {
             binding.SetDestination(new ContextMemberPathBindingStrategy(() => binding.Parent, MemberPath.Get(memberExpression)));
