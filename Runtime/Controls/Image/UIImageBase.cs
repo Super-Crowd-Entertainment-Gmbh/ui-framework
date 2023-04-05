@@ -9,6 +9,8 @@ namespace Rehawk.UIFramework
         
         public abstract Sprite Sprite { get; set; }
         
+        public abstract Material Material { get; set; }
+
         public abstract Color Color { get; set; }
 
         public abstract float FillAmount { get; set; }

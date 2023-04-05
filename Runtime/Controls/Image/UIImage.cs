@@ -35,6 +35,19 @@ namespace Rehawk.UIFramework
             }
         }
 
+        public override Material Material
+        {
+            get { return target.material; }
+            set
+            {
+                if (target.material != value)
+                {
+                    target.material = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         public override Color Color
         {
             get { return target.color; }
