@@ -126,6 +126,13 @@ namespace Rehawk.UIFramework
 
             return binding;
         }
+        
+        public static Binding ToList(this Binding binding, Func<UIList> getListCallback)
+        {
+            binding.ToContext(getListCallback);
+
+            return binding;
+        }
 
 
         public static Binding ToCallback<T>(this Binding binding, Action<T> setCallback)
