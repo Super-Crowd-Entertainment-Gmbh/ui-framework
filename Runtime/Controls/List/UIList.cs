@@ -15,7 +15,7 @@ namespace Rehawk.UIFramework
         private IUIListItemStrategy itemStrategy;
         private Type itemReceiverType;
 
-        private object[] datasets;
+        private readonly List<object> datasets = new List<object>();
         
         private UIListItemCallbackDelegate onInitialized;
         private UIListItemCallbackDelegate onActivated;
@@ -93,30 +93,28 @@ namespace Rehawk.UIFramework
 
         private void RefreshItems()
         {
-            if (datasets != null)
+            for (int i = datasets.Count - 1; i >= 0; i--)
             {
-                for (int i = datasets.Length - 1; i >= 0; i--)
-                {
-                    GameObject item = itemStrategy.GetItem(i);
+                GameObject item = itemStrategy.GetItem(i);
 
-                    if (item != null)
-                    {
-                        itemStrategy.RemoveItem(i);
-                
-                        InvokeCallback(UIListItemCallback.Deactivated, i, item, datasets[i]);
-                    }
+                if (item != null)
+                {
+                    itemStrategy.RemoveItem(i);
+            
+                    InvokeCallback(UIListItemCallback.Deactivated, i, item, datasets[i]);
                 }
             }
             
             if (RawContext is IEnumerable enumerable)
             {
-                datasets = enumerable.Cast<object>().ToArray();
+                datasets.Clear();
                 
-                for (int i = 0; i < datasets.Length; i++)
+                int index = 0;
+                foreach (object data in enumerable)
                 {
-                    object data = datasets[i];
+                    datasets.Insert(index, data);
                     
-                    ItemAddReport addReport = itemStrategy.AddItem(i, data);
+                    ItemAddReport addReport = itemStrategy.AddItem(index, data);
 
                     GameObject item = addReport.Object;
                     bool isNew = addReport.IsNew;
@@ -132,16 +130,18 @@ namespace Rehawk.UIFramework
                         
                         if (item.TryGetComponent(itemReceiverType, out Component itemReceiverComponent) && itemReceiverComponent is IUIListItemReceiver itemReceiver)
                         {
-                            itemReceiver.SetListItem(new ListItem(i, data));
+                            itemReceiver.SetListItem(new ListItem(index, data));
                         }
                 
                         if (isNew)
                         {
-                            InvokeCallback(UIListItemCallback.Initialized, i, item, data);
+                            InvokeCallback(UIListItemCallback.Initialized, index, item, data);
                         }
                 
-                        InvokeCallback(UIListItemCallback.Activated, i, item, data);
+                        InvokeCallback(UIListItemCallback.Activated, index, item, data);
                     }
+
+                    index++;
                 }
             }
         }
