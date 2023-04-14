@@ -71,8 +71,10 @@ namespace Rehawk.UIFramework
             if (emptyItemsQueue.Count > 0)
             {
                 GameObject item = emptyItemsQueue.Dequeue();
+                
                 emptyItems.Remove(item);
                 
+                item.transform.SetSiblingIndex(index);
                 item.SetActive(true);
                 
                 addReport = new ItemAddReport(item, false);
@@ -80,10 +82,12 @@ namespace Rehawk.UIFramework
             else
             {
                 GameObject item = Object.Instantiate(itemPrefab, root.transform);
+                
+                items.Add(item);
+
+                item.transform.SetSiblingIndex(index);
                 item.SetActive(true);
                     
-                items.Add(item);
-                
                 addReport = new ItemAddReport(item, true);
             }
 

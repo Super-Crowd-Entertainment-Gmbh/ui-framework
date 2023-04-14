@@ -44,6 +44,8 @@ namespace Rehawk.UIFramework
             GameObject itemPrefab = getItemPrefab.Invoke(index, data);
             
             GameObject item = Object.Instantiate(itemPrefab, root.transform);
+            
+            item.transform.SetSiblingIndex(index);
             item.SetActive(true);
                     
             items.Add(item);

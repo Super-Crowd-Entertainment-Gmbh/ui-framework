@@ -132,7 +132,7 @@ namespace Rehawk.UIFramework
                         {
                             itemReceiver.SetListItem(new ListItem(index, data));
                         }
-                
+                        
                         if (isNew)
                         {
                             InvokeCallback(UIListItemCallback.Initialized, index, item, data);
