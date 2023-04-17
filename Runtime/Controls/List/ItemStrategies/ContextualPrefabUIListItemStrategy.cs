@@ -11,14 +11,14 @@ namespace Rehawk.UIFramework
     /// List strategy that allows to choose a different prefab dependent on index and data for each list item.
     /// Doesn't support pooling of empty items.
     /// </summary>
-    public class ContextualPrefabUIListStrategy : IUIListItemStrategy
+    public class ContextualPrefabUIListItemStrategy : IUIListItemStrategy
     {
         private readonly GameObject root;
         private readonly GetPrefabFunctionDelegate getItemPrefab;
         
         private readonly List<GameObject> items = new List<GameObject>();
         
-        public ContextualPrefabUIListStrategy(GameObject root, GetPrefabFunctionDelegate getItemPrefab)
+        public ContextualPrefabUIListItemStrategy(GameObject root, GetPrefabFunctionDelegate getItemPrefab)
         {
             this.root = root;
             this.getItemPrefab = getItemPrefab;

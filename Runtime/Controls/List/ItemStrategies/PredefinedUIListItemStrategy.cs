@@ -8,7 +8,7 @@ namespace Rehawk.UIFramework
     /// List strategy that allows the use of any number of predefined items. 
     /// Ignores any further data if the number of predefined items is exceeded.
     /// </summary>
-    public class PredefinedUIListStrategy : IUIListItemStrategy
+    public class PredefinedUIListItemStrategy : IUIListItemStrategy
     {
         private readonly List<GameObject> items = new List<GameObject>();
         private readonly List<GameObject> newItems = new List<GameObject>();
@@ -17,7 +17,7 @@ namespace Rehawk.UIFramework
 
         private bool keepEmptyActive;
         
-        public PredefinedUIListStrategy(GameObject[] items)
+        public PredefinedUIListItemStrategy(GameObject[] items)
         {
             this.items.AddRange(items);
             this.newItems.AddRange(items);
@@ -81,7 +81,7 @@ namespace Rehawk.UIFramework
             else
             {
                 addReport = new ItemAddReport(null, false);
-                Debug.LogError($"<b>{nameof(PredefinedUIListStrategy)}:</b> Amount of predefined items exceeded.");
+                Debug.LogError($"<b>{nameof(PredefinedUIListItemStrategy)}:</b> Amount of predefined items exceeded.");
             }
 
             return addReport;

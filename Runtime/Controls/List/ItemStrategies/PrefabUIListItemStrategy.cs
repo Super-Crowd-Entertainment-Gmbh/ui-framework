@@ -9,7 +9,7 @@ namespace Rehawk.UIFramework
     /// List strategy that creates new items for each data based on a single prefab.
     /// Support pooling of empty items.
     /// </summary>
-    public class PrefabUIListStrategy : IUIListItemStrategy
+    public class PrefabUIListItemStrategy : IUIListItemStrategy
     {
         private readonly GameObject root;
         private readonly GameObject itemPrefab;
@@ -21,7 +21,7 @@ namespace Rehawk.UIFramework
 
         private bool keepEmptyActive;
 
-        public PrefabUIListStrategy(GameObject root, GameObject itemPrefab)
+        public PrefabUIListItemStrategy(GameObject root, GameObject itemPrefab)
         {
             this.root = root;
             this.itemPrefab = itemPrefab;

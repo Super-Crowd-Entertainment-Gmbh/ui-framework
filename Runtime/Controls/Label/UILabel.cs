@@ -9,14 +9,15 @@ namespace Rehawk.UIFramework
         [SerializeField]
         private TextMeshProUGUI target;
         
+        private IUILabelTextStrategy strategy;
+        
         public override string Text
         {
-            get { return target.text; }
+            get { return strategy.GetText(this); }
             set
             {
-                if (target.text != value)
+                if (strategy.SetText(this, value))
                 {
-                    target.text = value;
                     OnPropertyChanged();
                 }
             }
@@ -33,6 +34,36 @@ namespace Rehawk.UIFramework
                     OnPropertyChanged();
                 }
             }
+        }
+
+        protected override void Awake()
+        {
+            base.Awake();
+
+            if (strategy == null)
+            {
+                SetStrategy(new DefaultUILabelTextStrategy());
+            }
+        }
+
+        public override void SetStrategy(IUILabelTextStrategy strategy)
+        {
+            if (this.strategy != null)
+            {
+                this.strategy.TextChanged -= OnTextChanged;
+            }
+            
+            this.strategy = strategy;
+            
+            if (this.strategy != null)
+            {
+                this.strategy.TextChanged += OnTextChanged;
+            }
+        }
+
+        private void OnTextChanged(object sender, string text)
+        {
+            target.text = text;
         }
 
 #if UNITY_EDITOR

@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 // TODO: A proper implementation of INotifyCollectionChanged would be nice. So that not every time the list got dirty every item is "recreated".
