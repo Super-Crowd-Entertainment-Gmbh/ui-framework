@@ -2,19 +2,19 @@ namespace Rehawk.UIFramework
 {
     public static class UIControlBaseExtensions
     {
-        public static void SetCommand<TNode>(this TNode node, string commandName, CommandActionDelegate commandAction) where TNode : UIControlBase 
+        public static void SetCommand<TControl>(this TControl control, string commandName, CommandActionDelegate commandAction) where TControl : UIControlBase 
         {
-            node.SetCommand(commandName, new ActionCommand(commandAction));
+            control.SetCommand(commandName, new ActionCommand(commandAction));
         }
         
-        public static void SetCommand<TNode, TCommandArgs>(this TNode node, string commandName, CommandActionDelegate<TCommandArgs> commandAction) where TNode : UIControlBase where TCommandArgs : ICommandArgs
+        public static void SetCommand<TControl, TCommandArgs>(this TControl control, string commandName, CommandActionDelegate<TCommandArgs> commandAction) where TControl : UIControlBase where TCommandArgs : ICommandArgs
         {
-            node.SetCommand(commandName, new ActionCommand<TCommandArgs>(commandAction));
+            control.SetCommand(commandName, new ActionCommand<TCommandArgs>(commandAction));
         }
         
-        public static void SetCommand<TNode>(this TNode node, string commandName, AnonymousCommandActionDelegate commandAction) where TNode : UIControlBase 
+        public static void SetCommand<TControl>(this TControl control, string commandName, AnonymousCommandActionDelegate commandAction) where TControl : UIControlBase 
         {
-            node.SetCommand(commandName, new ActionCommand((_, _) =>
+            control.SetCommand(commandName, new ActionCommand((_, _) =>
             {
                 commandAction.Invoke();
             }));

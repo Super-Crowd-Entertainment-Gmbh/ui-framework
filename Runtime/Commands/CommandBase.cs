@@ -2,11 +2,11 @@
 {
     public abstract class CommandBase<T> : ICommand where T : ICommandArgs
     {
-        public void Execute(UIControlBase node, ICommandArgs args)
+        public void Execute(UIControlBase control, ICommandArgs args)
         {
-            Execute(node, (T) args);
+            Execute(control, (T) args);
         }
 
-        protected abstract void Execute(UIControlBase node, T args);
+        protected abstract void Execute(UIControlBase control, T args);
     }
 }
