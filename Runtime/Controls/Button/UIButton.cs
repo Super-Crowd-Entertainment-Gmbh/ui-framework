@@ -9,6 +9,32 @@ namespace Rehawk.UIFramework
 
         private Button button;
         
+        public override bool IsVisible
+        {
+            get
+            {
+                if (button)
+                {
+                    return button.gameObject.activeSelf;
+                }
+
+                return gameObject.activeSelf;
+            }
+            set
+            {
+                if (button)
+                {
+                    button.gameObject.SetActive(value);
+                }
+                else
+                {
+                    gameObject.SetActive(value);
+                }
+                
+                OnPropertyChanged();
+            }
+        }
+
         public override bool IsInteractable
         {
             get

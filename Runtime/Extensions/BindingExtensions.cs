@@ -149,7 +149,7 @@ namespace Rehawk.UIFramework
             return binding;
         }
         
-        public static Binding ConnectedTo(this Binding binding, Func<INotifyPropertyChanged> getContext, string propertyName, ConnectedPropertyDirection direction = ConnectedPropertyDirection.SourceToDestination) 
+        public static Binding ListenTo(this Binding binding, Func<INotifyPropertyChanged> getContext, string propertyName, ConnectedPropertyDirection direction = ConnectedPropertyDirection.SourceToDestination) 
         {
             binding.ConnectTo(getContext, propertyName, direction);
             

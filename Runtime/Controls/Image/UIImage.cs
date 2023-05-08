@@ -74,6 +74,11 @@ namespace Rehawk.UIFramework
             }
         }
 
+        public void SetNativeSize()
+        {
+            target.SetNativeSize();    
+        }
+        
 #if UNITY_EDITOR
         protected override void Reset()
         {
