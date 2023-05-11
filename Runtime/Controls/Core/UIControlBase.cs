@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace Rehawk.UIFramework
@@ -140,6 +141,7 @@ namespace Rehawk.UIFramework
             return binding;
         }
 
+        [ContextMenu("Evaluate Bindings")]
         protected void EvaluateBindings()
         {
             for (int i = 0; i < bindings.Count; i++)

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 // TODO: A proper implementation of INotifyCollectionChanged would be nice. So that not every time the list got dirty every item is "recreated".
@@ -23,6 +24,13 @@ namespace Rehawk.UIFramework
         public IReadOnlyList<GameObject> Items
         {
             get { return itemStrategy.Items; }    
+        }
+
+        protected override void BeforeContextChanged()
+        {
+            base.BeforeContextChanged();
+
+            ClearItems();
         }
 
         protected override void AfterContextChanged()
@@ -90,20 +98,32 @@ namespace Rehawk.UIFramework
             }
         }
 
-        private void RefreshItems()
+        private void ClearItems()
         {
-            for (int i = datasets.Count - 1; i >= 0; i--)
-            {
-                GameObject item = itemStrategy.GetItem(i);
+            int index = 0;
 
+            foreach (GameObject item in itemStrategy.Items)
+            {
                 if (item != null)
                 {
-                    itemStrategy.RemoveItem(i);
-            
-                    InvokeCallback(UIListItemCallback.Deactivated, i, item, datasets[i]);
+                    if (datasets.Count > index)
+                    {
+                        InvokeCallback(UIListItemCallback.Deactivated, index, item, datasets[index]);
+                    }
+                    else
+                    {
+                        InvokeCallback(UIListItemCallback.Deactivated, index, item, null);
+                    }
                 }
+
+                index++;
             }
-            
+
+            itemStrategy.Clear();
+        }
+        
+        private void RefreshItems()
+        {
             if (RawContext is IEnumerable enumerable)
             {
                 datasets.Clear();

@@ -9,5 +9,6 @@ namespace Rehawk.UIFramework
         GameObject GetItem(int index);
         ItemAddReport AddItem(int index, object data);
         void RemoveItem(int index);
+        void Clear();
     }
 }

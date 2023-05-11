@@ -94,6 +94,14 @@ namespace Rehawk.UIFramework
             emptyItems.Add(items[index]);
         }
 
+        public void Clear()
+        {
+            for (int i = 0; i < items.Count; i++)
+            {
+                RemoveItem(i);
+            }
+        }
+
         [Serializable]
         public class Dependencies
         {
