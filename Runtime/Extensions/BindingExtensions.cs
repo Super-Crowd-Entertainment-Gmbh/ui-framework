@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.Linq.Expressions;
+using UnityEngine;
 
 namespace Rehawk.UIFramework
 {
@@ -33,7 +34,14 @@ namespace Rehawk.UIFramework
         {
             binding.SetConverter(new FunctionConverter(value =>
             {
-                return converterFunction.Invoke((T) value);
+                if (value != null)
+                {
+                    return converterFunction.Invoke((T) value);
+                }
+                else
+                {
+                    return converterFunction.Invoke(default);
+                }
             }));
             
             return binding;
@@ -41,14 +49,22 @@ namespace Rehawk.UIFramework
         
         public static Binding As<T>(this Binding binding)
         {
-            binding.Converted(input => (T) input);
+            binding.Converted(input =>
+            {
+                if (input != null)
+                {
+                    return (T) input;
+                }
+
+                return default(T);
+            });
             
             return binding;
         }
 
         public static Binding AsBool(this Binding binding)
         {
-            binding.Converted(input => (bool) input);
+            binding.As<bool>();
             
             return binding;
         }
@@ -96,7 +112,17 @@ namespace Rehawk.UIFramework
 
         public static Binding Inverted(this Binding binding)
         {
-            binding.Converted(input => !((bool) input));
+            binding.Converted(input =>
+            {
+                if (input != null)
+                {
+                    return !((bool)input);
+                }
+                
+                // Null is processed like false
+                
+                return true;
+            });
             
             return binding;
         }
