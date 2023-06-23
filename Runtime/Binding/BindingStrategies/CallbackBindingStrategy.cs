@@ -4,15 +4,15 @@ namespace Rehawk.UIFramework
 {
     public class CallbackBindingStrategy<T> : IBindingStrategy
     {
-        private readonly Func<T> getCallback;
+        private readonly Func<T> getFunction;
         private readonly Action<T> setCallback;
         
         // Has no implementation for that.
-        public event Action GotDirty;
+        public event EventHandler GotDirty;
 
-        public CallbackBindingStrategy(Func<T> getCallback, Action<T> setCallback)
+        public CallbackBindingStrategy(Func<T> getFunction, Action<T> setCallback)
         {
-            this.getCallback = getCallback;
+            this.getFunction = getFunction;
             this.setCallback = setCallback;
         }
 
@@ -22,9 +22,9 @@ namespace Rehawk.UIFramework
         
         public object Get()
         {
-            if (getCallback != null)
+            if (getFunction != null)
             {
-                return getCallback.Invoke();
+                return getFunction.Invoke();
             }
 
             return null;

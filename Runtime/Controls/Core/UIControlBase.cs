@@ -131,7 +131,16 @@ namespace Rehawk.UIFramework
             
             return binding;
         }
-
+        
+        public Binding BindCallback<T>(Action<T> setCallback)
+        {
+            var binding = Binding.BindCallback<T>(this, () => default, setCallback);
+            
+            bindings.Add(binding);
+            
+            return binding;
+        }
+        
         public Binding BindCallback<T>(Func<T> getCallback, Action<T> setCallback)
         {
             var binding = Binding.BindCallback<T>(this, getCallback, setCallback);

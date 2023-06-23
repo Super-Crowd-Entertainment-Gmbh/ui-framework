@@ -4,22 +4,22 @@ namespace Rehawk.UIFramework
 {
     public class ContextBindingStrategy : IBindingStrategy
     {
-        private readonly Func<UIContextControlBase> getControlCallback;
+        private readonly Func<UIContextControlBase> getControlFunction;
 
         private UIContextControlBase control;
         
-        public event Action GotDirty;
+        public event EventHandler GotDirty;
 
-        public ContextBindingStrategy(Func<UIContextControlBase> getControlCallback)
+        public ContextBindingStrategy(Func<UIContextControlBase> getControlFunction)
         {
-            this.getControlCallback = getControlCallback;
+            this.getControlFunction = getControlFunction;
         }
 
         public void Evaluate()
         {
             UnLinkFromEvents();
 
-            control = getControlCallback.Invoke();
+            control = getControlFunction.Invoke();
             
             LinkToEvents();
         }
@@ -65,7 +65,7 @@ namespace Rehawk.UIFramework
         
         private void OnControlContextChanged(object sender, EventArgs e)
         {
-            GotDirty?.Invoke();
+            GotDirty?.Invoke(this, e);
         }
     }
 }

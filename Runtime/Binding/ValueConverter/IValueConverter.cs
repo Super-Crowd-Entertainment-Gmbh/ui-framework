@@ -2,7 +2,7 @@
 {
     public interface IValueConverter
     {
-        object Convert(object input);
-        object ConvertBack(object input);
+        object Convert(object value);
+        object ConvertBack(object value);
     }
 }

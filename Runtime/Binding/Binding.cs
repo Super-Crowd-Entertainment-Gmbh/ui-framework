@@ -15,31 +15,31 @@ namespace Rehawk.UIFramework
         private IValueConverter converter;
         private BindingDirection direction;
 
-        private readonly List<ConnectedProperty> connectedProperties = new List<ConnectedProperty>();
+        private readonly List<IBindingConnection> connections = new List<IBindingConnection>();
 
         public Binding() { }
         
-        public Binding(object parent)
+        private Binding(object parent)
         {
             this.parent = parent;
         }
 
-        public object Parent
+        internal object Parent
         {
             get { return parent; }
         }
 
-        public IBindingStrategy SourceStrategy
+        internal IBindingStrategy SourceStrategy
         {
             get { return sourceStrategy; }
         }
         
-        public IBindingStrategy DestinationStrategy
+        internal IBindingStrategy DestinationStrategy
         {
             get { return destinationStrategy; }
         }
 
-        public void Release()
+        internal void Release()
         {
             if (sourceStrategy != null)
             {
@@ -49,7 +49,12 @@ namespace Rehawk.UIFramework
             if (destinationStrategy != null)
             {
                 destinationStrategy.Release();
-            }    
+            }
+
+            for (int i = 0; i < connections.Count; i++)
+            {
+                connections[i].Release();
+            }
         }
         
         internal void SetSource(IBindingStrategy strategy)
@@ -89,7 +94,7 @@ namespace Rehawk.UIFramework
             this.converter = converter;
         }
 
-        private void SetDirection(BindingDirection direction)
+        internal void SetDirection(BindingDirection direction)
         {
             this.direction = direction;
         }
@@ -99,9 +104,9 @@ namespace Rehawk.UIFramework
             sourceStrategy.Evaluate();
             destinationStrategy.Evaluate();
 
-            for (int i = 0; i < connectedProperties.Count; i++)
+            for (int i = 0; i < connections.Count; i++)
             {
-                connectedProperties[i].Evaluate();
+                connections[i].Evaluate();
             }
         }
         
@@ -129,20 +134,28 @@ namespace Rehawk.UIFramework
             sourceStrategy.Set(value);
         }
 
-        internal void ConnectTo(Func<INotifyPropertyChanged> getContext, string propertyName, ConnectedPropertyDirection direction = ConnectedPropertyDirection.SourceToDestination)
+        internal void ConnectTo<T>(Expression<Func<T>> memberExpression, BindingConnectionDirection direction = BindingConnectionDirection.SourceToDestination)
         {
-            var connectedProperty = new ConnectedProperty(getContext, propertyName, direction);
-            connectedProperty.Changed += OnConnectedPropertyChanged;
+            var connectedProperty = new MemberConnection(() => parent, MemberPath.Get(memberExpression), direction);
+            connectedProperty.Changed += OnBindingConnectionChanged;
             
-            connectedProperties.Add(connectedProperty);
+            connections.Add(connectedProperty);
         }
 
-        private void OnSourceGotDirty()
+        internal void ConnectTo(Func<INotifyPropertyChanged> getContextFunction, string propertyName, BindingConnectionDirection direction = BindingConnectionDirection.SourceToDestination)
+        {
+            var connectedProperty = new PropertyConnection(getContextFunction, propertyName, direction);
+            connectedProperty.Changed += OnBindingConnectionChanged;
+            
+            connections.Add(connectedProperty);
+        }
+
+        private void OnSourceGotDirty(object sender, EventArgs e)
         {
             SourceToDestination();
         }
 
-        private void OnDestinationGotDirty()
+        private void OnDestinationGotDirty(object sender, EventArgs e)
         {
             if (direction == BindingDirection.TwoWay)
             {
@@ -150,18 +163,18 @@ namespace Rehawk.UIFramework
             }
         }
         
-        private void OnConnectedPropertyChanged(object sender, EventArgs eventArgs)
+        private void OnBindingConnectionChanged(object sender, EventArgs eventArgs)
         {
             Evaluate();
             
-            if (sender is ConnectedProperty connectedProperty)
+            if (sender is IBindingConnection bindingConnection)
             {
-                switch (connectedProperty.Direction)
+                switch (bindingConnection.Direction)
                 {
-                    case ConnectedPropertyDirection.SourceToDestination:
+                    case BindingConnectionDirection.SourceToDestination:
                         SourceToDestination();
                         break;
-                    case ConnectedPropertyDirection.DestinationToSource:
+                    case BindingConnectionDirection.DestinationToSource:
                         DestinationToSource();
                         break;
                     default:
@@ -171,11 +184,11 @@ namespace Rehawk.UIFramework
         }
 
         
-        public static Binding Bind<T>(object parent, Func<object> getContext, Expression<Func<T>> memberExpression, BindingDirection direction = BindingDirection.OneWay)
+        public static Binding Bind<T>(object parent, Func<object> getContextFunction, Expression<Func<T>> memberExpression, BindingDirection direction = BindingDirection.OneWay)
         {
             var binding = new Binding(parent);
 
-            binding.SetSource(new ContextMemberPathBindingStrategy(getContext, MemberPath.Get(memberExpression)));
+            binding.SetDestination(new MemberBindingStrategy(getContextFunction, MemberPath.Get(memberExpression)));
             binding.SetDirection(direction);
             
             return binding;
@@ -184,42 +197,42 @@ namespace Rehawk.UIFramework
         /// <summary>
         /// Creates a new binding.
         /// </summary>
-        /// <param name="getContext">Should return the context object. If it's type implements <see cref="System.ComponentModel.INotifyPropertyChanged"/> or <see cref="System.Collections.Specialized.INotifyCollectionChanged"/> it will react when the context changes.</param>
+        /// <param name="getContextFunction">Should return the context object. If it's type implements <see cref="System.ComponentModel.INotifyPropertyChanged"/> or <see cref="System.Collections.Specialized.INotifyCollectionChanged"/> it will react when the context changes.</param>
         /// <param name="propertyName">Can be provided to distinguish context and data source from each other. Helpful in cases where the data source doesn't implements <see cref="System.ComponentModel.INotifyPropertyChanged"/> or <see cref="System.Collections.Specialized.INotifyCollectionChanged"/>. If it's null or empty, the context is the data source.</param>
         /// <param name="direction">Can be provided to set the direction of the binding.</param>
-        public static Binding BindProperty(object parent, Func<object> getContext, string propertyName, BindingDirection direction = BindingDirection.OneWay)
+        public static Binding BindProperty(object parent, Func<object> getContextFunction, string propertyName, BindingDirection direction = BindingDirection.OneWay)
         {
             var binding = new Binding(parent);
             
-            binding.SetSource(new ContextPropertyBindingStrategy(getContext, propertyName));
+            binding.SetDestination(new ContextPropertyBindingStrategy(getContextFunction, propertyName));
             binding.SetDirection(direction);
             
             return binding;
         }
         
-        public static Binding BindContext(object parent, Func<UIContextControlBase> getControlCallback, BindingDirection direction = BindingDirection.OneWay)
+        public static Binding BindContext(object parent, Func<UIContextControlBase> getControlFunction, BindingDirection direction = BindingDirection.OneWay)
         {
             var binding = new Binding(parent);
 
-            binding.SetSource(new ContextBindingStrategy(getControlCallback));
+            binding.SetDestination(new ContextBindingStrategy(getControlFunction));
             binding.SetDirection(direction);
 
             return binding;
         }
         
-        public static Binding BindCallback<T>(object parent, Func<T> getCallback, Action<T> setCallback, BindingDirection direction = BindingDirection.OneWay)
+        public static Binding BindCallback<T>(object parent, Action<T> setCallback)
+        {
+            return BindCallback<T>(parent, () => default, setCallback);
+        }
+        
+        public static Binding BindCallback<T>(object parent, Func<T> getFunction, Action<T> setCallback, BindingDirection direction = BindingDirection.OneWay)
         {
             var binding = new Binding(parent);
             
-            binding.SetSource(new CallbackBindingStrategy<T>(getCallback, setCallback));
+            binding.SetDestination(new CallbackBindingStrategy<T>(getFunction, setCallback));
             binding.SetDirection(direction);
             
             return binding;
-        }
-        
-        public static Binding BindCallback<T>(object parent, Func<T> getCallback)
-        {
-            return BindCallback<T>(parent, getCallback, _ => { });
         }
     }
 }

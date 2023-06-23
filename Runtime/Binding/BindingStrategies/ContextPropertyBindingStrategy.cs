@@ -7,7 +7,7 @@ namespace Rehawk.UIFramework
 {
     public class ContextPropertyBindingStrategy : IBindingStrategy
     {
-        private readonly Func<object> getContext;
+        private readonly Func<object> getContextFunction;
         private readonly string propertyName;
 
         private PropertyInfo propertyInfo;
@@ -15,11 +15,11 @@ namespace Rehawk.UIFramework
         private object context;
         private object value;
         
-        public event Action GotDirty;
+        public event EventHandler GotDirty;
 
-        public ContextPropertyBindingStrategy(Func<object> getContext, string propertyName)
+        public ContextPropertyBindingStrategy(Func<object> getContextFunction, string propertyName)
         {
-            this.getContext = getContext;
+            this.getContextFunction = getContextFunction;
             this.propertyName = propertyName;
         }
 
@@ -27,7 +27,7 @@ namespace Rehawk.UIFramework
         {
             UnLinkFromEvents();
             
-            context = getContext?.Invoke();
+            context = getContextFunction?.Invoke();
             
             if (context != null && !string.IsNullOrEmpty(propertyName))
             {
@@ -119,24 +119,24 @@ namespace Rehawk.UIFramework
 
         private void OnValueCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            GotDirty?.Invoke();
+            GotDirty?.Invoke(this, EventArgs.Empty);
         }
 
         private void OnValuePropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            GotDirty?.Invoke();
+            GotDirty?.Invoke(this, EventArgs.Empty);
         }
         
         private void OnContextCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            GotDirty?.Invoke();
+            GotDirty?.Invoke(this, EventArgs.Empty);
         }
 
         private void OnContextPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (string.IsNullOrEmpty(propertyName) || e.PropertyName == propertyName)
             {
-                GotDirty?.Invoke();
+                GotDirty?.Invoke(this, EventArgs.Empty);
             }
         }
     }

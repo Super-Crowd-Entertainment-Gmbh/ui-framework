@@ -4,9 +4,9 @@ namespace Rehawk.UIFramework
 {
     public class HexCodeToColorConverter : IValueConverter
     {
-        public object Convert(object input)
+        public object Convert(object value)
         {
-            if (input != null && ColorUtility.TryParseHtmlString(input.ToString(), out Color color))
+            if (value != null && ColorUtility.TryParseHtmlString(value.ToString(), out Color color))
             {
                 return color;
             }
@@ -14,9 +14,9 @@ namespace Rehawk.UIFramework
             return Color.white;
         }
 
-        public object ConvertBack(object input)
+        public object ConvertBack(object value)
         {
-            if (input is Color color)
+            if (value is Color color)
             {
                 return ColorUtility.ToHtmlStringRGBA(color);
             }

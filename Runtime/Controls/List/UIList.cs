@@ -1,16 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 // TODO: A proper implementation of INotifyCollectionChanged would be nice. So that not every time the list got dirty every item is "recreated".
 
 namespace Rehawk.UIFramework
 {
-    public delegate void UIListItemCallbackDelegate(int index, GameObject item, object data);
-
-    public class UIList : UIContextControlBase
+    public class UIList : UIListBase
     {
         private IUIListItemStrategy itemStrategy;
         private Type itemReceiverType;
@@ -21,7 +18,7 @@ namespace Rehawk.UIFramework
         private UIListItemCallbackDelegate onActivated;
         private UIListItemCallbackDelegate onDeactivated;
 
-        public IReadOnlyList<GameObject> Items
+        public override IReadOnlyList<GameObject> Items
         {
             get { return itemStrategy.Items; }    
         }
@@ -40,17 +37,17 @@ namespace Rehawk.UIFramework
             RefreshItems();
         }
 
-        public void SetItemStrategy(IUIListItemStrategy itemStrategy)
+        public override void SetItemStrategy(IUIListItemStrategy itemStrategy)
         {
             this.itemStrategy = itemStrategy;
         }
 
-        public void SetItemReceiverType<T>() where T : IUIListItemReceiver
+        public override void SetItemReceiverType<T>()
         {
             itemReceiverType = typeof(T);
         }
 
-        public void SetItemCallback(UIListItemCallback type, UIListItemCallbackDelegate callback)
+        public override void SetItemCallback(UIListItemCallback type, UIListItemCallbackDelegate callback)
         {
             switch (type)
             {

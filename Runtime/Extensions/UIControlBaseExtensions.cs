@@ -1,3 +1,5 @@
+using System;
+
 namespace Rehawk.UIFramework
 {
     public static class UIControlBaseExtensions

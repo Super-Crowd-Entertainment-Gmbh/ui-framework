@@ -1,6 +1,6 @@
 ﻿namespace Rehawk.UIFramework
 {
-    public enum ConnectedPropertyDirection
+    public enum BindingConnectionDirection
     {
         SourceToDestination,
         DestinationToSource

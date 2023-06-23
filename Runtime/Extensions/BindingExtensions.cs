@@ -1,7 +1,6 @@
 using System;
 using System.ComponentModel;
 using System.Linq.Expressions;
-using UnityEngine;
 
 namespace Rehawk.UIFramework
 {
@@ -129,7 +128,7 @@ namespace Rehawk.UIFramework
 
         public static Binding To<T>(this Binding binding, Expression<Func<T>> memberExpression) 
         {
-            binding.SetDestination(new ContextMemberPathBindingStrategy(() => binding.Parent, MemberPath.Get(memberExpression)));
+            binding.SetSource(new MemberBindingStrategy(() => binding.Parent, MemberPath.Get(memberExpression)));
             
             return binding;
         }
@@ -137,49 +136,116 @@ namespace Rehawk.UIFramework
         /// <summary>
         /// Defines the destination of the binding which will be reevaluated each time the binding gets dirty.
         /// </summary>
-        /// <param name="getContext">Should return the context object.</param>
+        /// <param name="getContextFunction">Should return the context object.</param>
         /// <param name="propertyName">Can be provided to distinguish context and data destination from each other.</param>
-        public static Binding ToProperty(this Binding binding, Func<object> getContext, string propertyName) 
+        public static Binding ToProperty(this Binding binding, Func<object> getContextFunction, string propertyName) 
         {
-            binding.SetDestination(new ContextPropertyBindingStrategy(getContext, propertyName));
+            binding.SetSource(new ContextPropertyBindingStrategy(getContextFunction, propertyName));
             
             return binding;
         }
         
-        public static Binding ToContext(this Binding binding, Func<UIContextControlBase> getControlCallback)
+        public static Binding ToContext(this Binding binding, Func<UIContextControlBase> getControlFunction)
         {
-            binding.SetDestination(new ContextBindingStrategy(getControlCallback));
+            binding.SetSource(new ContextBindingStrategy(getControlFunction));
+
+            return binding;
+        }
+
+        public static Binding ToCallback<T>(this Binding binding, Func<T> getFunction)
+        {
+            return binding.ToCallback(getFunction, _ => {});
+        }
+        
+        public static Binding ToCallback<T>(this Binding binding, Func<T> getFunction, Action<T> setCallback)
+        {
+            binding.SetSource(new CallbackBindingStrategy<T>(getFunction, setCallback));
 
             return binding;
         }
         
-        public static Binding ToList(this Binding binding, Func<UIList> getListCallback)
+        public static Binding ToMultiple<T>(this Binding binding, Expression<Func<T>> memberExpression)
         {
-            binding.ToContext(getListCallback);
+            MultiBindingStrategy multiBindingStrategy = ReplaceSourceWithMultiBindingStrategy(binding);
+            
+            multiBindingStrategy.AddBindingStrategy(new MemberBindingStrategy(() => binding.Parent, MemberPath.Get(memberExpression)));
 
             return binding;
         }
 
-
-        public static Binding ToCallback<T>(this Binding binding, Action<T> setCallback)
+        public static Binding ToMultipleProperty(this Binding binding, Func<object> getContextFunction, string propertyName)
         {
-            binding.SetDestination(new CallbackBindingStrategy<T>(() => default, setCallback));
-
-            return binding;
-        }
-        
-        public static Binding ToCallback<T>(this Binding binding, Func<T> getCallback, Action<T> setCallback)
-        {
-            binding.SetDestination(new CallbackBindingStrategy<T>(getCallback, setCallback));
+            MultiBindingStrategy multiBindingStrategy = ReplaceSourceWithMultiBindingStrategy(binding);
+            
+            multiBindingStrategy.AddBindingStrategy(new ContextPropertyBindingStrategy(getContextFunction, propertyName));
 
             return binding;
         }
-        
-        public static Binding ListenTo(this Binding binding, Func<INotifyPropertyChanged> getContext, string propertyName, ConnectedPropertyDirection direction = ConnectedPropertyDirection.SourceToDestination) 
+
+        public static Binding ToMultipleCallback<T>(this Binding binding, Func<T> getFunction)
         {
-            binding.ConnectTo(getContext, propertyName, direction);
+            return binding.ToMultipleCallback(getFunction, _ => { });
+        }
+
+        public static Binding ToMultipleCallback<T>(this Binding binding, Func<T> getFunction, Action<T> setCallback)
+        {
+            MultiBindingStrategy multiBindingStrategy = ReplaceSourceWithMultiBindingStrategy(binding);
+            
+            multiBindingStrategy.AddBindingStrategy(new CallbackBindingStrategy<T>(getFunction, setCallback));
+
+            return binding;
+        }
+
+        public static Binding Combined(this Binding binding, IMultiValueConverter valueConverter)
+        {
+            MultiBindingStrategy multiBindingStrategy = ReplaceSourceWithMultiBindingStrategy(binding);
+            
+            multiBindingStrategy.SetValueConverter(valueConverter);
+
+            return binding;
+        }
+
+        public static Binding Combined(this Binding binding, MultiValueConvertFunctionDelegate valueConverter)
+        {
+            return binding.Combined(new FunctionMultiConverter(valueConverter));
+        }
+
+        public static Binding ListenTo<T>(this Binding binding, Expression<Func<T>> memberExpression, BindingConnectionDirection direction = BindingConnectionDirection.SourceToDestination) 
+        {
+            binding.ConnectTo(memberExpression, direction);
             
             return binding;
+        }
+        
+        public static Binding ListenTo(this Binding binding, Func<INotifyPropertyChanged> getContextFunction, string propertyName, BindingConnectionDirection direction = BindingConnectionDirection.SourceToDestination) 
+        {
+            binding.ConnectTo(getContextFunction, propertyName, direction);
+            
+            return binding;
+        }
+        
+        private static MultiBindingStrategy ReplaceSourceWithMultiBindingStrategy(Binding binding)
+        {
+            if (binding.SourceStrategy is MultiBindingStrategy multiBindingStrategy)
+            {
+                // Do nothing.
+            }
+            else if (binding.SourceStrategy != null)
+            {
+                IBindingStrategy previousSourceStrategy = binding.SourceStrategy;
+                multiBindingStrategy = new MultiBindingStrategy();
+                multiBindingStrategy.AddBindingStrategy(previousSourceStrategy);
+                
+                binding.SetSource(multiBindingStrategy);
+            }
+            else
+            {
+                multiBindingStrategy = new MultiBindingStrategy();
+                
+                binding.SetSource(multiBindingStrategy);
+            }
+
+            return multiBindingStrategy;
         }
     }
 }

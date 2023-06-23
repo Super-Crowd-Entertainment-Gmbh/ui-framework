@@ -3,29 +3,29 @@ using System.ComponentModel;
 
 namespace Rehawk.UIFramework
 {
-    internal class ConnectedProperty
+    internal class PropertyConnection : IBindingConnection
     {
-        private readonly Func<INotifyPropertyChanged> getContext;
+        private readonly Func<INotifyPropertyChanged> getContextFunction;
         private readonly string propertyName;
-        private readonly ConnectedPropertyDirection direction;
+        private readonly BindingConnectionDirection direction;
 
         private INotifyPropertyChanged context;
         
         public event EventHandler Changed;
             
-        public ConnectedProperty(Func<INotifyPropertyChanged> getContext, string propertyName, ConnectedPropertyDirection direction)
+        public PropertyConnection(Func<INotifyPropertyChanged> getContextFunction, string propertyName, BindingConnectionDirection direction)
         {
-            this.getContext = getContext;
+            this.getContextFunction = getContextFunction;
             this.propertyName = propertyName;
             this.direction = direction;
         }
 
-        ~ConnectedProperty()
+        ~PropertyConnection()
         {
             context.PropertyChanged -= OnContextPropertyChanged;
         }
 
-        public ConnectedPropertyDirection Direction
+        public BindingConnectionDirection Direction
         {
             get { return direction; }
         }
@@ -37,13 +37,15 @@ namespace Rehawk.UIFramework
                 context.PropertyChanged -= OnContextPropertyChanged;
             }
             
-            context = getContext?.Invoke();
+            context = getContextFunction?.Invoke();
 
             if (context != null)
             {
                 context.PropertyChanged += OnContextPropertyChanged;
             }
         }
+
+        public void Release() { }
         
         private void OnContextPropertyChanged(object sender, PropertyChangedEventArgs e)
         {

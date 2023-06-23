@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
@@ -8,9 +7,9 @@ using UnityEngine;
 
 namespace Rehawk.UIFramework
 {
-    public class ContextMemberPathBindingStrategy : IBindingStrategy
+    public class BindedMember
     {
-        private readonly Func<object> getOrigin;
+        private readonly Func<object> getOriginFunction;
         private readonly string memberPath;
         private MemberInfo[] memberInfos;
         private object[] memberValues;
@@ -23,9 +22,9 @@ namespace Rehawk.UIFramework
         
         public event Action GotDirty;
 
-        public ContextMemberPathBindingStrategy(Func<object> getOrigin, string memberPath)
+        public BindedMember(Func<object> getOriginFunction, string memberPath)
         {
-            this.getOrigin = getOrigin;
+            this.getOriginFunction = getOriginFunction;
             this.memberPath = memberPath;
         }
 
@@ -33,7 +32,7 @@ namespace Rehawk.UIFramework
         {
             UnLinkFromEvents();
             
-            origin = getOrigin?.Invoke();
+            origin = getOriginFunction?.Invoke();
             
             EvaluateMemberPath();
             EvaluateContext();
@@ -88,7 +87,7 @@ namespace Rehawk.UIFramework
 
                 if (memberInfos[^1].MemberType == MemberTypes.Method)
                 {
-                    Debug.LogError($"Methods are not supported by {nameof(ContextMemberPathBindingStrategy)}. [memberName={memberName}, path={memberPath}]");
+                    Debug.LogError($"Methods are not supported by {nameof(MemberBindingStrategy)}. [memberName={memberName}, path={memberPath}]");
                 }
             }
         }
