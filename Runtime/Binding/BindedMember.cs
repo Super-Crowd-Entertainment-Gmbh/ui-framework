@@ -85,7 +85,7 @@ namespace Rehawk.UIFramework
                     }
                 }
 
-                if (memberInfos[^1].MemberType == MemberTypes.Method)
+                if (memberInfos.Length > 0 && memberInfos[memberInfos.Length - 1].MemberType == MemberTypes.Method)
                 {
                     Debug.LogError($"Methods are not supported by {nameof(MemberBindingStrategy)}. [memberName={memberName}, path={memberPath}]");
                 }
@@ -124,9 +124,9 @@ namespace Rehawk.UIFramework
         {
             object result = null;
 
-            if (context != null && memberInfos != null)
+            if (context != null && memberInfos != null && memberInfos.Length > 0)
             {
-                MemberInfo memberInfo = memberInfos[^1];
+                MemberInfo memberInfo = memberInfos[memberInfos.Length - 1];
                     
                 if (memberInfo is PropertyInfo propertyInfo)
                 {
@@ -143,9 +143,9 @@ namespace Rehawk.UIFramework
 
         public void Set(object value)
         {
-            if (context != null && memberInfos != null)
+            if (context != null && memberInfos != null && memberInfos.Length > 0)
             {
-                MemberInfo memberInfo = memberInfos[^1];
+                MemberInfo memberInfo = memberInfos[memberInfos.Length - 1];
 
                 if (memberInfo is PropertyInfo propertyInfo)
                 {
@@ -288,10 +288,12 @@ namespace Rehawk.UIFramework
 
         private void OnContextPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (string.IsNullOrEmpty(memberName) || e.PropertyName == memberName)
-            {
-                GotDirty?.Invoke();
-            }
+            // Caused a second invocation of GotDirty after OnMemberValuePropertyChanged.
+            
+            // if (string.IsNullOrEmpty(memberName) || e.PropertyName == memberName)
+            // {
+            //     GotDirty?.Invoke();
+            // }
         }
     }
 }

@@ -97,7 +97,7 @@ namespace Rehawk.UIFramework
 
         public void InvokeCommand(string commandName)
         {
-            InvokeCommand(commandName, ICommandArgs.Empty);
+            InvokeCommand(commandName, CommandArgs.Empty);
         }
 
         public Binding Bind<T>(Expression<Func<T>> memberExpression, BindingDirection direction = BindingDirection.OneWay)

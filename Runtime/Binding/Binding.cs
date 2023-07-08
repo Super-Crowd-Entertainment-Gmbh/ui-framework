@@ -39,6 +39,11 @@ namespace Rehawk.UIFramework
             get { return destinationStrategy; }
         }
 
+        internal IValueConverter Converter
+        {
+            get { return converter; }
+        }
+
         internal void Release()
         {
             if (sourceStrategy != null)

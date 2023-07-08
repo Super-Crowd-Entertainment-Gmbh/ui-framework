@@ -1,5 +1,3 @@
-using System;
-
 namespace Rehawk.UIFramework
 {
     public static class UIControlBaseExtensions
@@ -16,7 +14,7 @@ namespace Rehawk.UIFramework
         
         public static void SetCommand<TControl>(this TControl control, string commandName, AnonymousCommandActionDelegate commandAction) where TControl : UIControlBase 
         {
-            control.SetCommand(commandName, new ActionCommand((_, _) =>
+            control.SetCommand(commandName, new ActionCommand((control, args) =>
             {
                 commandAction.Invoke();
             }));
