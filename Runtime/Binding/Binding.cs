@@ -39,6 +39,11 @@ namespace Rehawk.UIFramework
             get { return destinationStrategy; }
         }
 
+        internal IValueConverter Converter
+        {
+            get { return converter; }
+        }
+
         internal void Release()
         {
             if (sourceStrategy != null)
@@ -184,7 +189,7 @@ namespace Rehawk.UIFramework
         }
 
         
-        public static Binding Bind<T>(object parent, Func<object> getContextFunction, Expression<Func<T>> memberExpression, BindingDirection direction = BindingDirection.OneWay)
+        public static Binding BindMember<T>(object parent, Func<object> getContextFunction, Expression<Func<T>> memberExpression, BindingDirection direction = BindingDirection.OneWay)
         {
             var binding = new Binding(parent);
 
@@ -194,12 +199,6 @@ namespace Rehawk.UIFramework
             return binding;
         }
 
-        /// <summary>
-        /// Creates a new binding.
-        /// </summary>
-        /// <param name="getContextFunction">Should return the context object. If it's type implements <see cref="System.ComponentModel.INotifyPropertyChanged"/> or <see cref="System.Collections.Specialized.INotifyCollectionChanged"/> it will react when the context changes.</param>
-        /// <param name="propertyName">Can be provided to distinguish context and data source from each other. Helpful in cases where the data source doesn't implements <see cref="System.ComponentModel.INotifyPropertyChanged"/> or <see cref="System.Collections.Specialized.INotifyCollectionChanged"/>. If it's null or empty, the context is the data source.</param>
-        /// <param name="direction">Can be provided to set the direction of the binding.</param>
         public static Binding BindProperty(object parent, Func<object> getContextFunction, string propertyName, BindingDirection direction = BindingDirection.OneWay)
         {
             var binding = new Binding(parent);

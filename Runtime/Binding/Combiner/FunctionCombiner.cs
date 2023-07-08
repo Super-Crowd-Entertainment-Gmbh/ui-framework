@@ -6,28 +6,28 @@ namespace Rehawk.UIFramework
     public delegate object[] MultiValueConvertBackFunctionDelegate(object value);
     public delegate object MultiValueConvertFunctionDelegate<in T>(T[] values);
     
-    public class FunctionMultiConverter : IMultiValueConverter
+    public class FunctionCombiner : IValueCombiner
     {
         private readonly MultiValueConvertFunctionDelegate convertFunction;
         private readonly MultiValueConvertBackFunctionDelegate convertBackFunction;
         
-        public FunctionMultiConverter(MultiValueConvertFunctionDelegate convertFunction)
+        public FunctionCombiner(MultiValueConvertFunctionDelegate convertFunction)
         {
             this.convertFunction = convertFunction;
         }
         
-        public FunctionMultiConverter(MultiValueConvertFunctionDelegate convertFunction, MultiValueConvertBackFunctionDelegate convertBackFunction)
+        public FunctionCombiner(MultiValueConvertFunctionDelegate convertFunction, MultiValueConvertBackFunctionDelegate convertBackFunction)
         {
             this.convertFunction = convertFunction;
             this.convertBackFunction = convertBackFunction;
         }
         
-        public object Convert(object[] values)
+        public object Combine(object[] values)
         {
             return convertFunction.Invoke(values);
         }
 
-        public object[] ConvertBack(object value)
+        public object[] Divide(object value)
         {
             if (convertBackFunction == null)
             {

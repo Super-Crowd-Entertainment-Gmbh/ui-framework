@@ -1,7 +1,12 @@
-﻿namespace Rehawk.UIFramework
+﻿using System;
+
+namespace Rehawk.UIFramework
 {
     public interface ICommand
     {
-        void Execute(UIControlBase control, ICommandArgs args);
+        event EventHandler CanExecuteChanged; 
+        
+        bool CanExecute(object args);
+        void Execute(object args);
     }
 }

@@ -11,7 +11,7 @@ namespace Rehawk.UIFramework
     /// </summary>
     public class PrefabUIListItemStrategy : IUIListItemStrategy
     {
-        private readonly GameObject root;
+        private readonly Transform root;
         private readonly GameObject itemPrefab;
         private readonly GetPrefabFunctionDelegate getItemPrefab;
         
@@ -21,7 +21,7 @@ namespace Rehawk.UIFramework
 
         private bool keepEmptyActive;
 
-        public PrefabUIListItemStrategy(GameObject root, GameObject itemPrefab)
+        public PrefabUIListItemStrategy(Transform root, GameObject itemPrefab)
         {
             this.root = root;
             this.itemPrefab = itemPrefab;
@@ -112,7 +112,7 @@ namespace Rehawk.UIFramework
         [Serializable]
         public class Dependencies
         {
-            public GameObject itemRoot;
+            public Transform itemRoot;
             public GameObject itemPrefab;
         }
     }

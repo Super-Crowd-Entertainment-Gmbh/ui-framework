@@ -12,7 +12,6 @@ namespace Rehawk.UIFramework
     {
         private UIPanel parentPanel;
         
-        private readonly Dictionary<string, ICommand> commands = new Dictionary<string, ICommand>();
         private readonly List<Binding> bindings = new List<Binding>();
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -82,38 +81,15 @@ namespace Rehawk.UIFramework
         
         protected virtual void SetupBindings() { }
         
-        public void SetCommand(string commandName, ICommand command)
-        {
-            commands[commandName] = command;
-        }
-
-        public void InvokeCommand<T>(string commandName, T args) where T : ICommandArgs
-        {
-            if (commands.TryGetValue(commandName, out ICommand command))
-            {
-                command.Execute(this, args);
-            }
-        }
-
-        public void InvokeCommand(string commandName)
-        {
-            InvokeCommand(commandName, ICommandArgs.Empty);
-        }
-
         public Binding Bind<T>(Expression<Func<T>> memberExpression, BindingDirection direction = BindingDirection.OneWay)
         {
-            var binding = Binding.Bind(this, () => this, memberExpression, direction);
+            var binding = Binding.BindMember(this, () => this, memberExpression, direction);
             
             bindings.Add(binding);
             
             return binding;
         }
 
-        /// <summary>
-        /// Creates a new binding which will be reevaluated each time this node gets dirty.
-        /// </summary>
-        /// <param name="getContext">Should return the context object. If it's type implements <see cref="System.ComponentModel.INotifyPropertyChanged"/> or <see cref="System.Collections.Specialized.INotifyCollectionChanged"/> it will react to changes without setting the whole node dirty.</param>
-        /// <param name="propertyName">Can be provided to distinguish context and data source from each other. Helpful in cases where the data source doesn't implements <see cref="System.ComponentModel.INotifyPropertyChanged"/> or <see cref="System.Collections.Specialized.INotifyCollectionChanged"/>. If it's null or empty, the context is the data source.</param>
         public Binding BindProperty(Func<object> getContext, string propertyName, BindingDirection direction = BindingDirection.OneWay)
         {
             var binding = Binding.BindProperty(this, getContext, propertyName, direction);
@@ -130,6 +106,11 @@ namespace Rehawk.UIFramework
             bindings.Add(binding);
             
             return binding;
+        }
+        
+        public Binding BindItems(Func<UIContextControlBase> getControlCallback, BindingDirection direction = BindingDirection.OneWay)
+        {
+            return BindContext(getControlCallback, direction);
         }
         
         public Binding BindCallback<T>(Action<T> setCallback)

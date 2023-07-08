@@ -1,3 +1,4 @@
+using System;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -8,6 +9,43 @@ namespace Rehawk.UIFramework
         private bool isInteractable = true;
 
         private Button button;
+        private ICommand clickCommand;
+        private ICommand hoverBeginCommand;
+        private ICommand hoverEndCommand;
+
+        public override ICommand ClickCommand
+        {
+            get { return clickCommand; }
+            set
+            {
+                if (clickCommand != null)
+                {
+                    clickCommand.CanExecuteChanged -= OnClickCommandCanExecuteChanged;
+                }
+
+                if (SetField(ref clickCommand, value))
+                {
+                    ReevaluateInteractableState();
+                }
+                
+                if (clickCommand != null)
+                {
+                    clickCommand.CanExecuteChanged += OnClickCommandCanExecuteChanged;
+                }
+            }
+        }
+        
+        public override ICommand HoverBeginCommand
+        {
+            get { return hoverBeginCommand; }
+            set { SetField(ref hoverBeginCommand, value); }
+        }
+        
+        public override ICommand HoverEndCommand
+        {
+            get { return hoverEndCommand; }
+            set { SetField(ref hoverEndCommand, value); }
+        }
         
         public override bool IsVisible
         {
@@ -63,34 +101,46 @@ namespace Rehawk.UIFramework
             base.Awake();
 
             button = GetComponent<Button>();
-            
-            if (button)
-            {
-                isInteractable = button.interactable;
-            }
+        }
+
+        protected override void Start()
+        {
+            base.Start();
+
+            IsInteractable = false;
+        }
+
+        private void ReevaluateInteractableState()
+        {
+            IsInteractable = ClickCommand != null && ClickCommand.CanExecute(null);
+        }
+        
+        private void OnClickCommandCanExecuteChanged(object sender, EventArgs e)
+        {
+            ReevaluateInteractableState();
         }
 
         void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
         {
-            if (IsInteractable)
+            if (IsInteractable && HoverBeginCommand != null && HoverBeginCommand.CanExecute(null))
             {
-                InvokeCommand(HOVER_BEGIN_COMMAND);
+                HoverBeginCommand?.Execute(null);
             }
         }
 
         void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
         {
-            if (IsInteractable)
+            if (IsInteractable && HoverEndCommand != null && HoverEndCommand.CanExecute(null))
             {
-                InvokeCommand(HOVER_END_COMMAND);
+                HoverEndCommand?.Execute(null);
             }
         }
 
         void IPointerClickHandler.OnPointerClick(PointerEventData eventData)
         {
-            if (IsInteractable)
+            if (IsInteractable && ClickCommand != null && ClickCommand.CanExecute(null))
             {
-                InvokeCommand(CLICK_COMMAND);
+                ClickCommand?.Execute(null);
             }
         }
     }
