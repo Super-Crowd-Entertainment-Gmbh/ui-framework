@@ -17,6 +17,8 @@ namespace Rehawk.UIFramework
 
         private readonly List<IBindingConnection> connections = new List<IBindingConnection>();
 
+        public event Action Evaluated;
+            
         public Binding() { }
         
         private Binding(object parent)
@@ -113,6 +115,8 @@ namespace Rehawk.UIFramework
             {
                 connections[i].Evaluate();
             }
+            
+            Evaluated?.Invoke();
         }
         
         internal void SourceToDestination()
@@ -142,7 +146,10 @@ namespace Rehawk.UIFramework
         internal void ConnectTo<T>(Expression<Func<T>> memberExpression, BindingConnectionDirection direction = BindingConnectionDirection.SourceToDestination)
         {
             var connectedProperty = new MemberConnection(() => parent, MemberPath.Get(memberExpression), direction);
-            connectedProperty.Changed += OnBindingConnectionChanged;
+            connectedProperty.Changed += () =>
+            {
+                OnBindingConnectionChanged(connectedProperty.Direction);
+            };
             
             connections.Add(connectedProperty);
         }
@@ -150,17 +157,20 @@ namespace Rehawk.UIFramework
         internal void ConnectTo(Func<INotifyPropertyChanged> getContextFunction, string propertyName, BindingConnectionDirection direction = BindingConnectionDirection.SourceToDestination)
         {
             var connectedProperty = new PropertyConnection(getContextFunction, propertyName, direction);
-            connectedProperty.Changed += OnBindingConnectionChanged;
+            connectedProperty.Changed += () =>
+            {
+                OnBindingConnectionChanged(connectedProperty.Direction);
+            };
             
             connections.Add(connectedProperty);
         }
 
-        private void OnSourceGotDirty(object sender, EventArgs e)
+        private void OnSourceGotDirty()
         {
             SourceToDestination();
         }
 
-        private void OnDestinationGotDirty(object sender, EventArgs e)
+        private void OnDestinationGotDirty()
         {
             if (direction == BindingDirection.TwoWay)
             {
@@ -168,23 +178,20 @@ namespace Rehawk.UIFramework
             }
         }
         
-        private void OnBindingConnectionChanged(object sender, EventArgs eventArgs)
+        private void OnBindingConnectionChanged(BindingConnectionDirection direction)
         {
             Evaluate();
             
-            if (sender is IBindingConnection bindingConnection)
+            switch (direction)
             {
-                switch (bindingConnection.Direction)
-                {
-                    case BindingConnectionDirection.SourceToDestination:
-                        SourceToDestination();
-                        break;
-                    case BindingConnectionDirection.DestinationToSource:
-                        DestinationToSource();
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+                case BindingConnectionDirection.SourceToDestination:
+                    SourceToDestination();
+                    break;
+                case BindingConnectionDirection.DestinationToSource:
+                    DestinationToSource();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 

@@ -61,7 +61,7 @@ namespace Rehawk.UIFramework
             }
         }
 
-        private void OnTextChanged(object sender, string text)
+        private void OnTextChanged(string text)
         {
             target.text = text;
         }

@@ -4,7 +4,7 @@ namespace Rehawk.UIFramework
 {
     public interface IBindingStrategy
     {
-        event EventHandler GotDirty;
+        event Action GotDirty;
 
         void Evaluate();
         void Release();

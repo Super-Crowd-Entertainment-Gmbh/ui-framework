@@ -4,7 +4,7 @@ namespace Rehawk.UIFramework
 {
     public interface IUILabelTextStrategy
     {
-        public event EventHandler<string> TextChanged;
+        public event Action<string> TextChanged;
         
         string GetText(UILabel label);
         bool SetText(UILabel label, string value);

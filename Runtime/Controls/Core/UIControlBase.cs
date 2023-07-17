@@ -159,13 +159,13 @@ namespace Rehawk.UIFramework
         protected virtual void OnPanelBecameVisible() {}
         protected virtual void OnPanelBecameInvisible() {}
         
-        private void OnPanelBecameVisible(object sender, UIPanel panel)
+        private void OnPanelBecameVisible(UIPanel panel)
         {
             SetDirty();
             OnPanelBecameVisible();
         }
 
-        private void OnPanelBecameInvisible(object sender, UIPanel panel)
+        private void OnPanelBecameInvisible(UIPanel panel)
         {
             OnPanelBecameInvisible();
         }

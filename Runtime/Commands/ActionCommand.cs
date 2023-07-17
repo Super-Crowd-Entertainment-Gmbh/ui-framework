@@ -8,7 +8,7 @@ namespace Rehawk.UIFramework
     {
         private readonly CommandActionDelegate commandAction;
         
-        public event EventHandler CanExecuteChanged;
+        public event Action CanExecuteChanged;
         
         public ActionCommand(CommandActionDelegate commandAction)
         {

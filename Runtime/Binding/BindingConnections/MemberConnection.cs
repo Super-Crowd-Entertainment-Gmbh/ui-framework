@@ -7,7 +7,7 @@ namespace Rehawk.UIFramework
         private readonly BindedMember member;
         private readonly BindingConnectionDirection direction;
         
-        public event EventHandler Changed;
+        public event Action Changed;
             
         public MemberConnection(Func<object> getOriginFunction, string memberPath, BindingConnectionDirection direction)
         {
@@ -39,7 +39,7 @@ namespace Rehawk.UIFramework
 
         private void OnMemberGotDirty()
         {
-            Changed?.Invoke(this, EventArgs.Empty);
+            Changed?.Invoke();
         }
     }
 }

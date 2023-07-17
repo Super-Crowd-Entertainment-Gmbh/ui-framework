@@ -15,7 +15,7 @@ namespace Rehawk.UIFramework
         private object context;
         private object value;
         
-        public event EventHandler GotDirty;
+        public event Action GotDirty;
 
         public ContextPropertyBindingStrategy(Func<object> getContextFunction, string propertyName)
         {
@@ -119,24 +119,24 @@ namespace Rehawk.UIFramework
 
         private void OnValueCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            GotDirty?.Invoke(this, EventArgs.Empty);
+            GotDirty?.Invoke();
         }
 
         private void OnValuePropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            GotDirty?.Invoke(this, EventArgs.Empty);
+            GotDirty?.Invoke();
         }
         
         private void OnContextCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            GotDirty?.Invoke(this, EventArgs.Empty);
+            GotDirty?.Invoke();
         }
 
         private void OnContextPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (string.IsNullOrEmpty(propertyName) || e.PropertyName == propertyName)
             {
-                GotDirty?.Invoke(this, EventArgs.Empty);
+                GotDirty?.Invoke();
             }
         }
     }

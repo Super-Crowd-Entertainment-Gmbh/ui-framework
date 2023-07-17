@@ -6,7 +6,7 @@ namespace Rehawk.UIFramework
     {
         private readonly BindedMember member;
         
-        public event EventHandler GotDirty;
+        public event Action GotDirty;
 
         public MemberBindingStrategy(Func<object> getOriginFunction, string memberPath)
         {
@@ -36,7 +36,7 @@ namespace Rehawk.UIFramework
 
         private void OnMemberGotDirty()
         {
-            GotDirty?.Invoke(this, EventArgs.Empty);
+            GotDirty?.Invoke();
         }
     }
 }

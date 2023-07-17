@@ -6,7 +6,7 @@ namespace Rehawk.UIFramework
     {
         private string text;
 
-        public event EventHandler<string> TextChanged;
+        public event Action<string> TextChanged;
 
         public string GetText(UILabel label)
         {
@@ -19,7 +19,7 @@ namespace Rehawk.UIFramework
             {
                 text = value;
                 
-                TextChanged?.Invoke(this, value);
+                TextChanged?.Invoke(value);
                 
                 return true;
             }

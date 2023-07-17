@@ -30,8 +30,8 @@ namespace Rehawk.UIFramework
         
         private UIPanel parentUIPanel;
 
-        public event EventHandler<UIPanel> BecameVisible;
-        public event EventHandler<UIPanel> BecameInvisible;
+        public event Action<UIPanel> BecameVisible;
+        public event Action<UIPanel> BecameInvisible;
         
         public bool IsVisible
         {
@@ -117,12 +117,12 @@ namespace Rehawk.UIFramework
 
             if (IsVisible)
             {
-                BecameVisible?.Invoke(this, this);
+                BecameVisible?.Invoke(this);
                 becameVisible.Invoke();
             }
             else
             {
-                BecameInvisible?.Invoke(this, this);
+                BecameInvisible?.Invoke(this);
                 becameInvisible.Invoke();
             }
         }
@@ -135,7 +135,7 @@ namespace Rehawk.UIFramework
             SetVisible(visibility == InitialVisibility.Visible);
         }
         
-        private void OnParentUIPanelBecameVisible(object sender, UIPanel panel)
+        private void OnParentUIPanelBecameVisible(UIPanel panel)
         {
             if (parentConstraint == ParentConstraint.ShowWith || parentConstraint == ParentConstraint.HideAndShowWith)
             {
@@ -143,7 +143,7 @@ namespace Rehawk.UIFramework
             }
         }
 
-        private void OnParentUIPanelBecameInvisible(object sender, UIPanel panel)
+        private void OnParentUIPanelBecameInvisible(UIPanel panel)
         {
             if (parentConstraint == ParentConstraint.HideWith || parentConstraint == ParentConstraint.HideAndShowWith)
             {

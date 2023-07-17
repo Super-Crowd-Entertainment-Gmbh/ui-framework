@@ -9,7 +9,7 @@ namespace Rehawk.UIFramework
 
         private bool isInitialized;
         
-        public event EventHandler ContextChanged;
+        public event Action ContextChanged;
 
         public bool HasContext
         {
@@ -68,7 +68,7 @@ namespace Rehawk.UIFramework
                 SetDirty();
             }
             
-            ContextChanged?.Invoke(this, EventArgs.Empty);
+            ContextChanged?.Invoke();
         }
 
         public void ClearContext()

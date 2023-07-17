@@ -4,7 +4,7 @@ namespace Rehawk.UIFramework
 {
     public interface ICommand
     {
-        event EventHandler CanExecuteChanged; 
+        event Action CanExecuteChanged; 
         
         bool CanExecute(object args);
         void Execute(object args);

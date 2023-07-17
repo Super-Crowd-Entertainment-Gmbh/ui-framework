@@ -4,7 +4,7 @@ namespace Rehawk.UIFramework
 {
     public interface IBindingConnection
     {
-        event EventHandler Changed;
+        event Action Changed;
         
         BindingConnectionDirection Direction { get; }
         

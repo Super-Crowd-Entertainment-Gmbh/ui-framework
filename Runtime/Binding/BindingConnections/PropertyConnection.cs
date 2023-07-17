@@ -11,7 +11,7 @@ namespace Rehawk.UIFramework
 
         private INotifyPropertyChanged context;
         
-        public event EventHandler Changed;
+        public event Action Changed;
             
         public PropertyConnection(Func<INotifyPropertyChanged> getContextFunction, string propertyName, BindingConnectionDirection direction)
         {
@@ -51,7 +51,7 @@ namespace Rehawk.UIFramework
         {
             if (e.PropertyName == propertyName)
             {
-                Changed?.Invoke(this, EventArgs.Empty);
+                Changed?.Invoke();
             }
         }
     }

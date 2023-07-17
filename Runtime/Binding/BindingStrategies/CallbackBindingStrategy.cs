@@ -8,7 +8,7 @@ namespace Rehawk.UIFramework
         private readonly Action<T> setCallback;
         
         // Has no implementation for that.
-        public event EventHandler GotDirty;
+        public event Action GotDirty;
 
         public CallbackBindingStrategy(Func<T> getFunction, Action<T> setCallback)
         {

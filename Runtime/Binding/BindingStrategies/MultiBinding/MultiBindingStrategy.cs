@@ -11,7 +11,7 @@ namespace Rehawk.UIFramework
         
         private object[] values;
         
-        public event EventHandler GotDirty;
+        public event Action GotDirty;
 
         public void SetCombiner(IValueCombiner valueCombiner)
         {
@@ -67,9 +67,9 @@ namespace Rehawk.UIFramework
             }
         }
         
-        private void OnBindingStrategyGotDirty(object sender, EventArgs e)
+        private void OnBindingStrategyGotDirty()
         {
-            GotDirty?.Invoke(this, e);
+            GotDirty?.Invoke();
         }
         
         internal static void AddSourceStrategy(Binding binding, IBindingStrategy bindingStrategy)

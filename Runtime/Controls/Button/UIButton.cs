@@ -115,7 +115,7 @@ namespace Rehawk.UIFramework
             IsInteractable = ClickCommand != null && ClickCommand.CanExecute(null);
         }
         
-        private void OnClickCommandCanExecuteChanged(object sender, EventArgs e)
+        private void OnClickCommandCanExecuteChanged()
         {
             ReevaluateInteractableState();
         }

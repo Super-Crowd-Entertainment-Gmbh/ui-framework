@@ -8,7 +8,7 @@ namespace Rehawk.UIFramework
 
         private UIContextControlBase control;
         
-        public event EventHandler GotDirty;
+        public event Action GotDirty;
 
         public ContextBindingStrategy(Func<UIContextControlBase> getControlFunction)
         {
@@ -63,9 +63,9 @@ namespace Rehawk.UIFramework
             }
         }
         
-        private void OnControlContextChanged(object sender, EventArgs e)
+        private void OnControlContextChanged()
         {
-            GotDirty?.Invoke(this, e);
+            GotDirty?.Invoke();
         }
     }
 }

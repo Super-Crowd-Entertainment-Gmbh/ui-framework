@@ -6,7 +6,7 @@ namespace Rehawk.UIFramework
     {
         private object value;
         
-        public event EventHandler GotDirty;
+        public event Action GotDirty;
 
         public StaticValueBindingStrategy(object value)
         {
@@ -27,7 +27,7 @@ namespace Rehawk.UIFramework
             if (this.value != value)
             {
                 this.value = value;
-                GotDirty?.Invoke(this, EventArgs.Empty);
+                GotDirty?.Invoke();
             }
         }
     }
