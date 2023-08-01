@@ -44,6 +44,21 @@ namespace Rehawk.UIFramework
                 
                 return gameObject.activeSelf;
             }
+            set
+            {
+                if (IsVisible != value)
+                {
+                    if (visibilityStrategy != null)
+                    {
+                        visibilityStrategy.SetVisible(value, HandleVisibilityChange);
+                    }
+                    else
+                    {
+                        gameObject.SetActive(value);
+                        HandleVisibilityChange();
+                    }
+                }
+            }
         }
 
         public UIPanel Parent
@@ -90,18 +105,7 @@ namespace Rehawk.UIFramework
 
         public void SetVisible(bool visible)
         {
-            if (IsVisible != visible)
-            {
-                if (visibilityStrategy != null)
-                {
-                    visibilityStrategy.SetVisible(visible, HandleVisibilityChange);
-                }
-                else
-                {
-                    gameObject.SetActive(visible);
-                    HandleVisibilityChange();
-                }
-            }
+            IsVisible = visible;
         }
 
         [ContextMenu("Toggle")]

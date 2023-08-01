@@ -34,7 +34,7 @@ namespace Rehawk.UIFramework
 
         public static Binding ConvertTo<T>(this Binding binding)
         {
-            binding.ConvertByFunction(input =>
+            return binding.ConvertByFunction(input =>
             {
                 if (input != null)
                 {
@@ -43,20 +43,16 @@ namespace Rehawk.UIFramework
 
                 return default(T);
             });
-            
-            return binding;
         }
 
         public static Binding ConvertToBool(this Binding binding)
         {
-            binding.ConvertTo<bool>();
-            
-            return binding;
+            return binding.ConvertTo<bool>();
         }
 
         public static Binding ConvertToInt(this Binding binding)
         {
-            binding.ConvertByFunction(input =>
+            return binding.ConvertByFunction(input =>
             {
                 string inputStr = input?.ToString();
                 
@@ -67,13 +63,11 @@ namespace Rehawk.UIFramework
 
                 return 0;
             });
-            
-            return binding;
         }
 
         public static Binding ConvertToFloat(this Binding binding)
         {
-            binding.ConvertByFunction(input =>
+            return binding.ConvertByFunction(input =>
             {
                 string inputStr = input?.ToString();
                 
@@ -84,13 +78,11 @@ namespace Rehawk.UIFramework
 
                 return 0f;
             });
-            
-            return binding;
         }
 
         public static Binding ConvertToDouble(this Binding binding)
         {
-            binding.ConvertByFunction(input =>
+            return binding.ConvertByFunction(input =>
             {
                 string inputStr = input?.ToString();
                 
@@ -101,33 +93,27 @@ namespace Rehawk.UIFramework
 
                 return 0f;
             });
-            
-            return binding;
         }
 
         public static Binding ConvertToString(this Binding binding)
         {
-            binding.ConvertByFunction(input =>
+            return binding.ConvertByFunction(input =>
             {
                 return input?.ToString();
             });
-            
-            return binding;
         }
 
         public static Binding ConvertToString(this Binding binding, string format)
         {
-            binding.ConvertByFunction(input =>
+            return binding.ConvertByFunction(input =>
             {
                 return string.Format(format, input);
             });
-            
-            return binding;
         }
 
         public static Binding ConvertToDateTimeString(this Binding binding, string format)
         {
-            binding.ConvertByFunction(input =>
+            return binding.ConvertByFunction(input =>
             {
                 if (input is DateTime dateTime)
                 {
@@ -136,13 +122,11 @@ namespace Rehawk.UIFramework
                 
                 return input;
             });
-            
-            return binding;
         }
 
         public static Binding ConvertToInvertedBool(this Binding binding)
         {
-            binding.ConvertByFunction(input =>
+            return binding.ConvertByFunction(input =>
             {
                 if (input != null)
                 {
@@ -153,8 +137,6 @@ namespace Rehawk.UIFramework
                 
                 return true;
             });
-            
-            return binding;
         }
         
         public static Binding ConvertBy(this Binding binding, IValueConverter converter) 

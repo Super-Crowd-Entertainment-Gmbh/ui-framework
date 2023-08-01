@@ -101,12 +101,7 @@ namespace Rehawk.UIFramework
             base.Awake();
 
             button = GetComponent<Button>();
-        }
-
-        protected override void Start()
-        {
-            base.Start();
-
+            
             IsInteractable = false;
         }
 

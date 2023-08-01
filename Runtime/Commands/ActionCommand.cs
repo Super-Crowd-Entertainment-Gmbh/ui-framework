@@ -24,10 +24,5 @@ namespace Rehawk.UIFramework
         {
             commandAction.Invoke(args);
         }
-
-        public static ICommand Create(CommandActionDelegate commandAction)
-        {
-            return new ActionCommand(commandAction);
-        }
     }
 }

@@ -17,7 +17,7 @@ namespace Rehawk.UIFramework
 
         private readonly List<IBindingConnection> connections = new List<IBindingConnection>();
 
-        public event Action Evaluated;
+        public event Action<EvaluationDirection> Evaluated;
             
         public Binding() { }
         
@@ -108,6 +108,11 @@ namespace Rehawk.UIFramework
 
         internal void Evaluate()
         {
+            Evaluate(EvaluationDirection.Source);
+        }
+
+        private void Evaluate(EvaluationDirection direction)
+        {
             sourceStrategy.Evaluate();
             destinationStrategy.Evaluate();
 
@@ -116,7 +121,7 @@ namespace Rehawk.UIFramework
                 connections[i].Evaluate();
             }
             
-            Evaluated?.Invoke();
+            Evaluated?.Invoke(direction);
         }
         
         internal void SourceToDestination()
@@ -180,14 +185,14 @@ namespace Rehawk.UIFramework
         
         private void OnBindingConnectionChanged(BindingConnectionDirection direction)
         {
-            Evaluate();
-            
             switch (direction)
             {
                 case BindingConnectionDirection.SourceToDestination:
+                    Evaluate(EvaluationDirection.Source);
                     SourceToDestination();
                     break;
                 case BindingConnectionDirection.DestinationToSource:
+                    Evaluate(EvaluationDirection.Destination);
                     DestinationToSource();
                     break;
                 default:
