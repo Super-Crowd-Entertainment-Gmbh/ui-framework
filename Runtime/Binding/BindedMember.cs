@@ -87,7 +87,7 @@ namespace Rehawk.UIFramework
 
                 if (memberInfos.Length > 0 && memberInfos[memberInfos.Length - 1].MemberType == MemberTypes.Method)
                 {
-                    Debug.LogError($"Methods are not supported by {nameof(MemberBindingStrategy)}. [memberName={memberName}, path={memberPath}]");
+                    Debug.LogError($"Methods are not supported. [memberName={memberName}, path={memberPath}]");
                 }
             }
         }

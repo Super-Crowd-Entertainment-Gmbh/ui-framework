@@ -2,9 +2,9 @@ using System;
 
 namespace Rehawk.UIFramework
 {
-    public static class BindingDoExtensions
+    public static class BindingOnChangedExtensions
     {
-        public static Binding Do(this Binding binding, Action callback)
+        public static Binding OnChanged(this Binding binding, Action callback)
         {
             binding.Evaluated += _ =>
             {
@@ -14,7 +14,7 @@ namespace Rehawk.UIFramework
             return binding;
         }
         
-        public static Binding Do(this Binding binding, Action<EvaluationDirection> callback)
+        public static Binding OnChanged(this Binding binding, Action<EvaluationDirection> callback)
         {
             binding.Evaluated += callback;
             

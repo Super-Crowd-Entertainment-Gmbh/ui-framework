@@ -19,8 +19,6 @@ namespace Rehawk.UIFramework
 
         public event Action<EvaluationDirection> Evaluated;
             
-        public Binding() { }
-        
         private Binding(object parent)
         {
             this.parent = parent;
