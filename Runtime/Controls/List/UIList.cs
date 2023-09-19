@@ -138,7 +138,7 @@ namespace Rehawk.UIFramework
                     if (item != null)
                     {
                         Type itemReceiverType = this.itemReceiverType;
-
+                        
                         if (itemReceiverType == null)
                         {
                             itemReceiverType = typeof(IUIListItemReceiver);
@@ -147,6 +147,10 @@ namespace Rehawk.UIFramework
                         if (item.TryGetComponent(itemReceiverType, out Component itemReceiverComponent) && itemReceiverComponent is IUIListItemReceiver itemReceiver)
                         {
                             itemReceiver.SetListItem(new ListItem(index, data));
+                        }
+                        else if (this.itemReceiverType != null)
+                        {
+                            Debug.LogError($"No fitting item receiver has been found. [requestedItemReceiver={this.itemReceiverType}]", item);
                         }
                         
                         if (isNew)

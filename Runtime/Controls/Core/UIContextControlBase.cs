@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using UnityEngine;
 
 namespace Rehawk.UIFramework
 {
@@ -120,7 +121,15 @@ namespace Rehawk.UIFramework
         protected override void AfterContextChanged()
         {
             base.AfterContextChanged();
-            castedContext = (T) RawContext;
+
+            try
+            {
+                castedContext = (T) RawContext;
+            }
+            catch (InvalidCastException e)
+            {
+                Debug.LogError($"Context was not of expected type. [expectedType={typeof(T)}, actualType={RawContext.GetType()}]");
+            }
         }
     }
 }

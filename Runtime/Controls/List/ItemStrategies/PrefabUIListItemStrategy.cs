@@ -33,6 +33,8 @@ namespace Rehawk.UIFramework
             }
         }
         
+        public PrefabUIListItemStrategy(Dependencies dependencies) : this(dependencies.itemRoot, dependencies.itemPrefab) { }
+        
         public IReadOnlyList<GameObject> Items
         {
             get { return items; }

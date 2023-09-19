@@ -1,12 +1,12 @@
-using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Rehawk.UIFramework
 {
-    public class UIInputField : UIInputFieldBase
+    public class UISlider : UISliderBase
     {
         [SerializeField]
-        private TMP_InputField target;
+        private Slider target;
         
         private ICommand changedCommand;
 
@@ -30,10 +30,44 @@ namespace Rehawk.UIFramework
             }
         }
 
-        public override string Value
+        public override float Value
         {
-            get { return target.text; }
-            set { target.text = value; }
+            get { return target.value; }
+            set { target.value = value; }
+        }
+
+        public override float NormalizedValue
+        {
+            get { return target.normalizedValue; }
+            set { target.normalizedValue = value; }
+        }
+
+        public override float MinValue
+        {
+            get { return target.minValue; }
+            set 
+            {
+                if (target.minValue != value)
+                {
+                    target.minValue = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(NormalizedValue));
+                } 
+            }
+        }
+
+        public override float MaxValue
+        {
+            get { return target.maxValue; }
+            set 
+            {
+                if (target.maxValue != value)
+                {
+                    target.maxValue = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(NormalizedValue));
+                } 
+            }
         }
 
         public override ICommand ChangedCommand
@@ -64,16 +98,17 @@ namespace Rehawk.UIFramework
             }
         }
 
-        private void OnValueChanged(string text)
+        private void OnValueChanged(float value)
         {
             OnPropertyChanged(nameof(Value));
+            OnPropertyChanged(nameof(NormalizedValue));
             
             if (ChangedCommand != null && ChangedCommand.CanExecute(null))
             {
-                ChangedCommand?.Execute(text);
+                ChangedCommand?.Execute(value);
             }
         }
-        
+
 #if UNITY_EDITOR
         protected override void Reset()
         {
@@ -81,7 +116,7 @@ namespace Rehawk.UIFramework
             
             if (target == null)
             {
-                target = GetComponentInChildren<TMP_InputField>();
+                target = GetComponentInChildren<Slider>();
             }
         }
 
@@ -91,7 +126,7 @@ namespace Rehawk.UIFramework
 
             if (target == null)
             {
-                target = GetComponentInChildren<TMP_InputField>();
+                target = GetComponentInChildren<Slider>();
             }
         }
 #endif

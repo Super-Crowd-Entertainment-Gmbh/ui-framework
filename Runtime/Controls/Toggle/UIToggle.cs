@@ -1,12 +1,12 @@
-using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Rehawk.UIFramework
 {
-    public class UIInputField : UIInputFieldBase
+    public class UIToggle : UIToggleBase
     {
         [SerializeField]
-        private TMP_InputField target;
+        private Toggle target;
         
         private ICommand changedCommand;
 
@@ -30,10 +30,10 @@ namespace Rehawk.UIFramework
             }
         }
 
-        public override string Value
+        public override bool Value
         {
-            get { return target.text; }
-            set { target.text = value; }
+            get { return target.isOn; }
+            set { target.isOn = value; }
         }
 
         public override ICommand ChangedCommand
@@ -64,13 +64,13 @@ namespace Rehawk.UIFramework
             }
         }
 
-        private void OnValueChanged(string text)
+        private void OnValueChanged(bool isOn)
         {
             OnPropertyChanged(nameof(Value));
             
             if (ChangedCommand != null && ChangedCommand.CanExecute(null))
             {
-                ChangedCommand?.Execute(text);
+                ChangedCommand?.Execute(isOn);
             }
         }
         
@@ -81,7 +81,7 @@ namespace Rehawk.UIFramework
             
             if (target == null)
             {
-                target = GetComponentInChildren<TMP_InputField>();
+                target = GetComponentInChildren<Toggle>();
             }
         }
 
@@ -91,7 +91,7 @@ namespace Rehawk.UIFramework
 
             if (target == null)
             {
-                target = GetComponentInChildren<TMP_InputField>();
+                target = GetComponentInChildren<Toggle>();
             }
         }
 #endif

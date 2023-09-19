@@ -5,6 +5,8 @@ namespace Rehawk.UIFramework
 {
     public abstract class UIImageBase : UIControlBase
     {
+        public abstract bool IsVisible { get; set; }
+
         public abstract bool Enabled { get; set; }
         
         public abstract Sprite Sprite { get; set; }

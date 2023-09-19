@@ -24,6 +24,8 @@ namespace Rehawk.UIFramework
             this.getItemPrefab = getItemPrefab;
         }
         
+        public ContextualPrefabUIListItemStrategy(Dependencies dependencies, GetPrefabFunctionDelegate getItemPrefab) : this(dependencies.itemRoot, getItemPrefab) { }
+
         public IReadOnlyList<GameObject> Items
         {
             get { return items; }

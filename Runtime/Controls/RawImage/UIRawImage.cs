@@ -3,11 +3,20 @@ using UnityEngine.UI;
 
 namespace Rehawk.UIFramework
 {
-    [RequireComponent(typeof(RawImage))]
     public class UIRawImage : UIRawImageBase
     {
         [SerializeField]
         private RawImage target;
+
+        public override bool IsVisible
+        {
+            get { return target.gameObject.activeSelf; }
+            set 
+            {
+                target.gameObject.SetActive(value);
+                OnPropertyChanged();
+            }
+        }
 
         public override bool Enabled
         {
@@ -55,7 +64,7 @@ namespace Rehawk.UIFramework
             
             if (target == null)
             {
-                target = GetComponent<RawImage>();
+                target = GetComponentInChildren<RawImage>();
             }
         }
 
@@ -65,7 +74,7 @@ namespace Rehawk.UIFramework
 
             if (target == null)
             {
-                target = GetComponent<RawImage>();
+                target = GetComponentInChildren<RawImage>();
             }
         }
 #endif

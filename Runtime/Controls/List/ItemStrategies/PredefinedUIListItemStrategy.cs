@@ -32,6 +32,8 @@ namespace Rehawk.UIFramework
             }
         }
         
+        public PredefinedUIListItemStrategy(Dependencies dependencies) : this(dependencies.items) { }
+
         public IReadOnlyList<GameObject> Items
         {
             get { return items; }

@@ -7,17 +7,32 @@ namespace Rehawk.UIFramework
     public class ActionCommand : ICommand
     {
         private readonly CommandActionDelegate commandAction;
-        
+        private bool isExecutable;
+
         public event Action CanExecuteChanged;
         
-        public ActionCommand(CommandActionDelegate commandAction)
+        public ActionCommand(CommandActionDelegate commandAction, bool isExecutable = true)
         {
             this.commandAction = commandAction;
+            this.isExecutable = isExecutable;
+        }
+        
+        public bool IsExecutable
+        {
+            get { return isExecutable; }
+            set
+            {
+                if (value != isExecutable)
+                {
+                    isExecutable = value;
+                    CanExecuteChanged?.Invoke();
+                }
+            } 
         }
         
         public bool CanExecute(object args)
         {
-            return true;
+            return IsExecutable;
         }
 
         public void Execute(object args)

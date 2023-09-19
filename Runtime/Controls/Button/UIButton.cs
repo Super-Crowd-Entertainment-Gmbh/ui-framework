@@ -1,4 +1,3 @@
-using System;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -100,7 +99,7 @@ namespace Rehawk.UIFramework
         {
             base.Awake();
 
-            button = GetComponent<Button>();
+            button = GetComponentInChildren<Button>();
             
             IsInteractable = false;
         }

@@ -3,7 +3,6 @@ using UnityEngine;
 
 namespace Rehawk.UIFramework
 {
-    [RequireComponent(typeof(TextMeshProUGUI))]
     public class UILabel : UILabelBase
     {
         [SerializeField]
@@ -11,6 +10,16 @@ namespace Rehawk.UIFramework
         
         private IUILabelTextStrategy strategy;
         
+        public override bool IsVisible
+        {
+            get { return target.gameObject.activeSelf; }
+            set 
+            {
+                target.gameObject.SetActive(value);
+                OnPropertyChanged();
+            }
+        }
+
         public override string Text
         {
             get { return strategy.GetText(this); }
@@ -73,7 +82,7 @@ namespace Rehawk.UIFramework
             
             if (target == null)
             {
-                target = GetComponent<TextMeshProUGUI>();
+                target = GetComponentInChildren<TextMeshProUGUI>();
             }
         }
 
@@ -83,7 +92,7 @@ namespace Rehawk.UIFramework
 
             if (target == null)
             {
-                target = GetComponent<TextMeshProUGUI>();
+                target = GetComponentInChildren<TextMeshProUGUI>();
             }
         }
 #endif

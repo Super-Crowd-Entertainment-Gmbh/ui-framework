@@ -47,7 +47,25 @@ namespace Rehawk.UIFramework
 
         public static Binding ConvertToBool(this Binding binding)
         {
-            return binding.ConvertTo<bool>();
+            return binding.ConvertByFunction(input =>
+            {
+                if (input is bool boolValue)
+                {
+                    return boolValue;
+                }
+
+                if (input is int intValue)
+                {
+                    return intValue > 0;
+                }
+                
+                if (input is float floatValue)
+                {
+                    return floatValue > 0;
+                }
+                
+                return input != null;
+            });
         }
 
         public static Binding ConvertToInt(this Binding binding)
