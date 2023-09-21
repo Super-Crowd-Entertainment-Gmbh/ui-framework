@@ -6,14 +6,14 @@ namespace Rehawk.UIFramework
 {
     public static class BindingConnectionExtensions
     {
-        public static Binding ReevaluateWhen<T>(this Binding binding, Expression<Func<T>> memberExpression, BindingConnectionDirection direction = BindingConnectionDirection.SourceToDestination) 
+        public static Binding ReevaluateWhenChanged<T>(this Binding binding, Expression<Func<T>> memberExpression, BindingConnectionDirection direction = BindingConnectionDirection.SourceToDestination) 
         {
             binding.ConnectTo(memberExpression, direction);
             
             return binding;
         }
 
-        public static Binding ReevaluateWhen(this Binding binding, Func<INotifyPropertyChanged> getContextFunction, string propertyName, BindingConnectionDirection direction = BindingConnectionDirection.SourceToDestination) 
+        public static Binding ReevaluateWhenChanged(this Binding binding, Func<INotifyPropertyChanged> getContextFunction, string propertyName, BindingConnectionDirection direction = BindingConnectionDirection.SourceToDestination) 
         {
             binding.ConnectTo(getContextFunction, propertyName, direction);
             

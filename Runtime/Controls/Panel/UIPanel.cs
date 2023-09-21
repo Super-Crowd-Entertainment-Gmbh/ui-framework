@@ -19,13 +19,6 @@ namespace Rehawk.UIFramework
         [SerializeReference, SubclassSelector] 
         private VisibilityStrategyBase visibilityStrategy;
         
-        [Space]
-        
-        [SerializeField] 
-        private UnityEvent becameVisible;
-        [SerializeField]
-        private UnityEvent becameInvisible;
-
         private bool isInitialized;
         
         private UIPanel parentUIPanel;
@@ -122,12 +115,10 @@ namespace Rehawk.UIFramework
             if (IsVisible)
             {
                 BecameVisible?.Invoke(this);
-                becameVisible.Invoke();
             }
             else
             {
                 BecameInvisible?.Invoke(this);
-                becameInvisible.Invoke();
             }
         }
 

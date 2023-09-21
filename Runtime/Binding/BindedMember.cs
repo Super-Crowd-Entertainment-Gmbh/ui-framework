@@ -278,7 +278,9 @@ namespace Rehawk.UIFramework
 
         private void OnValuePropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            GotDirty?.Invoke();
+            // Caused a second invocation of GotDirty after OnMemberValuePropertyChanged.
+
+            //GotDirty?.Invoke();
         }
         
         private void OnContextCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
