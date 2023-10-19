@@ -2,7 +2,7 @@
     "name": "Rehawk.UI-Framework.MackySoft.SerializeReferenceExtensions.Editor",
     "rootNamespace": "",
     "references": [
-        "GUID:49b49c76ee64f6b41bf28ef951cb0e50"
+        "GUID:682fe1cf5a8107048ab2afbcde068435"
     ],
     "includePlatforms": [
         "Editor"
