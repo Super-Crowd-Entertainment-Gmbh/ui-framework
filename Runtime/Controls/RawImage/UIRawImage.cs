@@ -10,10 +10,10 @@ namespace Rehawk.UIFramework
 
         public override bool IsVisible
         {
-            get { return target.gameObject.activeSelf; }
+            get { return gameObject.activeSelf; }
             set 
             {
-                target.gameObject.SetActive(value);
+                gameObject.SetActive(value);
                 OnPropertyChanged();
             }
         }

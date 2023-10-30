@@ -64,6 +64,11 @@ namespace Rehawk.UIFramework
                     return floatValue > 0;
                 }
                 
+                if (input is string stringValue)
+                {
+                    return !string.IsNullOrEmpty(stringValue);
+                }
+                
                 return input != null;
             });
         }
